@@ -29,6 +29,7 @@ package magoffin.matt.meta.image;
 import java.io.File;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.util.Iterator;
 import java.util.Locale;
 
 import junit.framework.TestCase;
@@ -39,6 +40,13 @@ import magoffin.matt.meta.image.camera.Canon20D;
 import magoffin.matt.meta.image.camera.CanonG5;
 
 import org.apache.log4j.Logger;
+
+import com.drew.imaging.jpeg.JpegMetadataReader;
+import com.drew.imaging.jpeg.JpegProcessingException;
+import com.drew.metadata.Directory;
+import com.drew.metadata.Metadata;
+import com.drew.metadata.MetadataException;
+import com.drew.metadata.Tag;
 
 /**
  * Test case for the {@link EXIFMetadataResourceFactory} class.
@@ -142,6 +150,7 @@ public class EXIFMetadataResourceFactoryTest extends TestCase {
 		EXIFMetadataResourceFactory factory = new EXIFMetadataResourceFactory();
 		URL u = getClass().getClassLoader().getResource("magoffin/matt/meta/image/IMG_0027.JPG");
 		File file = new File(URLDecoder.decode(u.getFile(), "UTF-8"));
+		new SampleUsage(file);
 		MetadataResource mResource = factory.getMetadataResourceInstance(file);
 		assertNotNull(mResource);
 		log.debug("Got MetadataResource implementation: " +mResource.getClass().getName());
@@ -156,4 +165,47 @@ public class EXIFMetadataResourceFactoryTest extends TestCase {
 		}
 	}
 
+	private class SampleUsage
+	{
+	    /**
+	     * Constructor.
+	     * @param jpegFile jpeg file upon which to operate
+	     */
+	    public SampleUsage(File jpegFile)
+	    {
+	        try {
+	            Metadata metadata = JpegMetadataReader.readMetadata(jpegFile);
+	            printImageTags(1, metadata);
+	        } catch (JpegProcessingException e) {
+	            System.err.println("error 1a");
+	        }
+
+	    }
+
+	    @SuppressWarnings("unchecked")
+		private void printImageTags(int approachCount, Metadata metadata)
+	    {
+	        Iterator directories = metadata.getDirectoryIterator();
+	        while (directories.hasNext()) {
+	            Directory directory = (Directory)directories.next();
+	            Iterator tags = directory.getTagIterator();
+	            while (tags.hasNext()) {
+	                Tag tag = (Tag)tags.next();
+	                try {
+	                	log.info(tag.getDirectoryName() +'/' +tag.getTagTypeHex() +" (" +tag.getTagName() +") "
+	                		+tag.getDescription());
+	                } catch ( MetadataException e ) {
+	                	log.error(e);
+	                }
+	            }
+	            if (directory.hasErrors()) {
+	                Iterator errors = directory.getErrors();
+	                while (errors.hasNext()) {
+	                    log.error(errors.next());
+	                }
+	            }
+	        }
+	    }
+
+	}
 }

@@ -30,6 +30,7 @@ import java.io.InputStream;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 
 import magoffin.matt.meta.MetadataResource;
@@ -315,17 +316,8 @@ implements MetadataResource {
 			|| !dir.containsTag(GpsDirectory.TAG_GPS_LONGITUDE_REF) ) {
 			return null;
 		}
-		try {
-			String val = dir.getDescription(GpsDirectory.TAG_GPS_LONGITUDE);
-			String ref = dir.getDescription(GpsDirectory.TAG_GPS_LONGITUDE_REF);
-			if ( ref != null && val != null ) {
-				return ref +' ' +val;
-			}
-		} catch (MetadataException e) {
-			log.warn("Metadata exception getting Exif GPS longitude: " 
-					+ e.getMessage());
-		}
-		return null;
+		return getGpsString(dir, GpsDirectory.TAG_GPS_LONGITUDE_REF, 
+				GpsDirectory.TAG_GPS_LONGITUDE);
 	}
 	
 	/**
@@ -341,17 +333,50 @@ implements MetadataResource {
 			|| !dir.containsTag(GpsDirectory.TAG_GPS_LATITUDE_REF) ) {
 			return null;
 		}
+		return getGpsString(dir, GpsDirectory.TAG_GPS_LATITUDE_REF, 
+				GpsDirectory.TAG_GPS_LATITUDE);
+	}
+
+	private String getGpsString(Directory dir, int refTag, int valTag) {
+		String result = null;
+		
+		// 1st try: 3 rationals
 		try {
-			String val = dir.getDescription(GpsDirectory.TAG_GPS_LATITUDE);
-			String ref = dir.getDescription(GpsDirectory.TAG_GPS_LATITUDE_REF);
-			if ( ref != null && val != null ) {
-				return ref +' ' +val;
+			Rational[] data = dir.getRationalArray(valTag);
+			double deg = data[0].doubleValue();
+			double min = data[1].doubleValue();
+			double minFrac = min - Math.floor(min);
+			double sec = data[2].doubleValue();
+			if ( minFrac > 0 ) {
+				min = Math.floor(min);
+				sec += minFrac * 60;
+			}
+			
+			result = dir.getString(refTag)
+				+" " +roundDecimal(deg, 0) +"\u00B0" +(int)min +"'" 
+				+roundDecimal(sec, 1) +"\"";
+			if ( log.isDebugEnabled() ) {
+				log.debug("GPS rational: " +Arrays.toString(data) +"(string = " 
+					+dir.getString(valTag) +"): " +result);
 			}
 		} catch (MetadataException e) {
-			log.warn("Metadata exception getting Exif GPS latitude: " 
+			if ( log.isDebugEnabled() ) {
+				log.debug("Metadata exception getting Exif GPS rationals: " 
 					+ e.getMessage());
+			}
+			// fall back to descriptions
+			try {
+				String ref = dir.getDescription(refTag);
+				String val = dir.getDescription(valTag);
+				if ( ref != null && val != null ) {
+					result = ref +' ' +val;
+				}
+			} catch ( MetadataException e2 ) {
+				log.warn("Metadata exception getting Exif GPS value: " 
+						+ e.getMessage());
+			}
 		}
-		return null;
+		return result;
 	}
 	
 	/**
