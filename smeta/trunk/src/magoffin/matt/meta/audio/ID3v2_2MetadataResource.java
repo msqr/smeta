@@ -189,7 +189,7 @@ implements AudioMetadataResource {
 				mime = "image/" +format;
 			}
 			byte[] pic = (byte[])body.getObject("Picture Data");
-			if ( mime != null && pic != null && pic.length > 0 ) {
+			if ( pic != null && pic.length > 0 ) {
 				setValue(AudioMetadataType.ALBUM_COVER, 
 						new BasicMetadataImage(mime, pic));
 			}

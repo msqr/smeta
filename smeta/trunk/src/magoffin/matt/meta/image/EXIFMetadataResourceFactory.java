@@ -132,19 +132,15 @@ public class EXIFMetadataResourceFactory implements MetadataResourceFactory {
 				try {
 					return getJpegMetadataResource(in);
 				} finally {
-					if ( in != null ) {
-						try {
-							in.close();
-						} catch ( IOException e ) {
-							log.warn("Unable to close input stream: " +e);
-						}
+					try {
+						in.close();
+					} catch ( IOException e ) {
+						log.warn("Unable to close input stream: " +e);
 					}
 				}
 			}
 		} finally {
-			if ( rFile != null ) {
-				rFile.close();
-			}
+			rFile.close();
 		}
 		throw new MetadataNotSupportedException(file, this);
 	}
