@@ -175,7 +175,7 @@ public class EXIFMetadataResourceFactoryTest extends TestCase {
 	    {
 	        try {
 	            Metadata metadata = JpegMetadataReader.readMetadata(jpegFile);
-	            printImageTags(1, metadata);
+	            printImageTags(metadata);
 	        } catch (JpegProcessingException e) {
 	            System.err.println("error 1a");
 	        }
@@ -183,7 +183,7 @@ public class EXIFMetadataResourceFactoryTest extends TestCase {
 	    }
 
 	    @SuppressWarnings("unchecked")
-		private void printImageTags(int approachCount, Metadata metadata)
+		private void printImageTags(Metadata metadata)
 	    {
 	        Iterator directories = metadata.getDirectoryIterator();
 	        while (directories.hasNext()) {
