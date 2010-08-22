@@ -182,7 +182,7 @@ public class EXIFMetadataResourceFactoryTest extends TestCase {
 
 	    }
 
-	    @SuppressWarnings("unchecked")
+		@SuppressWarnings("rawtypes")
 		private void printImageTags(Metadata metadata)
 	    {
 	        Iterator directories = metadata.getDirectoryIterator();
