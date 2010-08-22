@@ -67,7 +67,7 @@ public class JMFMetadataResourceFactory implements MetadataResourceFactory {
 	private Processor getProcessor(File mediaResource) {
 	   Processor processor = null;
 		try {
-			processor = Manager.createProcessor(mediaResource.toURL());
+			processor = Manager.createProcessor(mediaResource.toURI().toURL());
 		} catch (Exception e) {
 		    log.error("Failed to get processor for video file " 
 		    		+mediaResource.getAbsolutePath());
