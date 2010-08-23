@@ -32,7 +32,7 @@ import java.awt.image.DirectColorModel;
 import java.awt.image.MemoryImageSource;
 
 import magoffin.matt.meta.MetadataConfigurationException;
-import magoffin.matt.meta.MetadataResourceFactory;
+import magoffin.matt.meta.MetadataResource;
 import magoffin.matt.meta.support.BasicMetadataImage;
 import quicktime.QTException;
 import quicktime.io.OpenMovieFile;
@@ -55,7 +55,7 @@ import quicktime.util.QTUtils;
 import quicktime.util.RawEncodedImage;
 
 /**
- * {@link MetadataResourceFactory} for video metadata using QuickTime.
+ * {@link MetadataResource} for video metadata using QuickTime.
  * 
  * @author Matt Magoffin (spamsqr@msqr.us)
  * @version $Revision$ $Date$
