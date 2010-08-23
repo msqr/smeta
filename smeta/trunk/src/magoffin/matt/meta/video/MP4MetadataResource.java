@@ -29,6 +29,10 @@ package magoffin.matt.meta.video;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.EnumSet;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+import java.util.Set;
 
 import magoffin.matt.meta.MetadataResource;
 
@@ -125,17 +129,11 @@ public class MP4MetadataResource extends AbstractVideoMetadataResource {
 			}
 		}
 		/*
-		Box[] boxes = isoFile.getBoxes();
-		if (log.isDebugEnabled()) {
-			log.debug("Got boxes: " + Arrays.toString(boxes));
-		}
-
 		Box box = (Box) get(isoFile, "/moov/udta/meta/ilst/©nam");
 		if (box instanceof AppleTrackTitleBox) {
 			AppleTrackTitleBox titleBox = (AppleTrackTitleBox) box;
 			System.out.println("Track title: " + titleBox.getTrackTitle());
 		}*/
-
 	}
 	
 	private void extractVideoMetadata(MediaHeaderBox header, SampleDescriptionBox sampleDescBox, 
@@ -150,16 +148,11 @@ public class MP4MetadataResource extends AbstractVideoMetadataResource {
 			setValue(VideoMetadataType.HEIGHT, visualEntry.getHeight());
 		}
 		SampleSizeBox sampleSize = getFirstBox(sampleDescBox.getParent(), SampleSizeBox.class);
-		if ( sampleSize != null ) {
-			if ( sampleSize.getSampleSize() > 0 ) {
-				
-			} else {
-				long[] entrySizes = sampleSize.getEntrySize();
-				long total = 0;
-				for ( long l : entrySizes ) {
-					total += l;
-				}
-				log.debug("Total sample size: " +total);
+		long sampleCount = sampleSize.getSampleCount();
+		if ( sampleCount > 0 ) {
+			float fps = (sampleCount * header.getTimescale()) / header.getDuration();
+			if ( fps > 0.0 ) {
+				setValue(VideoMetadataType.FPS, fps);
 			}
 		}
 	}
@@ -193,11 +186,97 @@ public class MP4MetadataResource extends AbstractVideoMetadataResource {
 	}
 
 	private String getTypeName(byte[] type) {
+		String t;
 		try {
-			return new String(type, "ISO-8859-1");
+			t = new String(type, "ISO-8859-1");
 		} catch ( UnsupportedEncodingException e ) {
-			return new String(type);
+			t = new String(type);
+		}
+		try {
+			return SampleFormat.forType(t).getDescription();
+		} catch ( IllegalArgumentException e ) {
+			return t;
 		}
 	}
+	
+	private enum SampleFormat {
+		
+		MP4A("mp4a"),
+		MP4V("mp4v"),
+		MP4S("mp4s"),
+		AVC1("avc1"),
+		ALAC("alac"),
+		OWMA("owma"),
+		OVC1("ovc1"),
+		AVCP("avcp"),
+		DRAC("drac"),
+		DRA1("dra1"),
+		AC_3("ac-3"),
+		EC_3("ec-3"),
+		G726("g726"),
+		MJP2("mjp2"),
+		OKSD("oksd"),
+		RAW_("raw "),
+		RTP_("rtp "),
+		S263("s263"),
+		SAMR("samr"),
+		SAWB("sawb"),
+		SAWP("sawp"),
+		SEVC("sevc"),
+		SQCP("sqcp"),
+		SRTP("srtp"),
+		SSMV("ssmv"),
+		TEXT("tetx"),
+		TWOS("twos"),
+		TX3G("tx3g"),
+		VC_1("vc-1"),
+		XML_("xml ");
+		
+		private String type;
+		
+		private SampleFormat(String t) {
+			this.type = t;
+		}
+		
+		/**
+		 * Get a description of this format.
+		 * 
+		 * @return textual description
+		 */
+		public String getDescription() {
+			ResourceBundle bundle = ResourceBundle.getBundle(
+					"magoffin/matt/meta/video/MP4MetadataResource");
+			try {
+				return bundle.getString("format."+name());
+			} catch ( MissingResourceException e ) {
+				return type;
+			}
+		}
 
+		/**
+		 * Get the type as a String.
+		 * 
+		 * @return the type
+		 */
+		public String getType() {
+			return type;
+		}
+		
+		/**
+		 * Get a SampleFormat for a given type.
+		 * 
+		 * @param type the type
+		 * @return the format
+		 */
+		public static SampleFormat forType(String type) {
+			Set<SampleFormat> set = EnumSet.allOf(SampleFormat.class);
+			for ( SampleFormat sf : set ) {
+				if ( sf.getType().equals(type) ) {
+					return sf;
+				}
+			}
+			throw new IllegalArgumentException(type);
+		}
+	}
+ 
 }
