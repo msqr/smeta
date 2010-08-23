@@ -11,5 +11,6 @@
 	<classpathentry kind="lib" path="lib/QTJSupport.jar"/>
 	<classpathentry kind="lib" path="lib/QTJava.zip"/>
 	<classpathentry kind="lib" path="lib/fobs4jmf.jar"/>
+	<classpathentry kind="lib" path="lib/isoviewer-1.0.jar" sourcepath="lib/isoviewer-1.0-src.jar"/>
 	<classpathentry kind="output" path="build/eclipse"/>
 </classpath>
