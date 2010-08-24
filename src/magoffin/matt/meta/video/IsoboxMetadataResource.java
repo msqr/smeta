@@ -1,5 +1,5 @@
 /* ===================================================================
- * MP4MetadataResource.java
+ * IsoboxMetadataResource.java
  * 
  * Created Aug 23, 2010 11:00:34 AM
  * 
@@ -30,11 +30,14 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.EnumSet;
+import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.Set;
 
 import magoffin.matt.meta.MetadataResource;
+import magoffin.matt.meta.support.LocalizablePlaceholder;
+import magoffin.matt.meta.support.LocalizablePlaceholder.ValueGenerator;
 
 import com.coremedia.iso.FileRandomAccessDataSource;
 import com.coremedia.iso.IsoFile;
@@ -64,7 +67,9 @@ import com.coremedia.iso.boxes.sampleentry.VisualSampleEntry;
  * @author matt
  * @version $Revision$ $Date$
  */
-public class MP4MetadataResource extends AbstractVideoMetadataResource {
+public class IsoboxMetadataResource extends AbstractVideoMetadataResource {
+	
+	//private Map<String, Object> internalData
 
 	/**
 	 * Construct from a File.
@@ -74,7 +79,7 @@ public class MP4MetadataResource extends AbstractVideoMetadataResource {
 	 * @throws IOException
 	 *             if an IO error occurs
 	 */
-	public MP4MetadataResource(File f) throws IOException {
+	public IsoboxMetadataResource(File f) throws IOException {
 		RandomAccessDataSource dataSource = null;
 		try {
 			dataSource = new FileRandomAccessDataSource(f);
@@ -138,9 +143,18 @@ public class MP4MetadataResource extends AbstractVideoMetadataResource {
 	
 	private void extractVideoMetadata(MediaHeaderBox header, SampleDescriptionBox sampleDescBox, 
 			VisualSampleEntry visualEntry) {
-		StringBuilder buf = new StringBuilder();
-		buf.append(getTypeName(visualEntry.getType()));
-		setValue(VideoMetadataType.VIDEO_FORMAT, buf);
+		final String type = getTypeName(visualEntry.getType());
+		
+		setValue(VideoMetadataType.VIDEO_FORMAT, new LocalizablePlaceholder(new ValueGenerator() {
+			public Object getValueForLocale(Locale locale) {
+				try {
+					return SampleFormat.forType(type).getDescription(locale);
+				} catch ( IllegalArgumentException e ) {
+					return type;
+				}
+			}
+		}));
+		
 		if ( visualEntry.getWidth() > 0 ) {
 			setValue(VideoMetadataType.WIDTH, visualEntry.getWidth());
 		}
@@ -159,30 +173,63 @@ public class MP4MetadataResource extends AbstractVideoMetadataResource {
 	
 	private void extractAudioMetadata(MediaHeaderBox header,
 			AudioSampleEntry audioEntry) {
-		StringBuilder buf = new StringBuilder();
-		buf.append(getTypeName(audioEntry.getType()));
-		if (audioEntry.getSampleRate() > 0f ) {
-			buf.append(", ").append(audioEntry.getSampleRate()).append(" Hz, ");
+		final String type = getTypeName(audioEntry.getType());
+		final Double rate;
+		if ( audioEntry.getSampleRate() > 0f ) {
+			rate = audioEntry.getSampleRate();
 		} else if ( header.getTimescale() > 0 ) {
-			long mhz = header.getTimescale();
-			buf.append(", ").append(String.format("%.1f", mhz / 1000.0)).append(" kHz, ");
+			rate = (double)header.getTimescale();
+		} else {
+			rate = null;
 		}
-		if (audioEntry.getSampleSize() > 0) {
-			buf.append(audioEntry.getSampleSize()).append(
-					" bit, ");
+		final Integer size;
+		if ( audioEntry.getSampleSize() > 0 ) {
+			size = audioEntry.getSampleSize();
+		} else {
+			size = null;
 		}
-		switch (audioEntry.getChannelCount()) {
-			case 1:
-				buf.append("mono");
-				break;
-			case 2:
-				buf.append("stereo");
-				break;
-			default:
-				buf.append(audioEntry.getChannelCount()).append(
-						" channels");
+		final Integer count;
+		if ( audioEntry.getChannelCount() > 0 ) {
+			count = audioEntry.getChannelCount();
+		} else {
+			count = null;
 		}
-		setValue(VideoMetadataType.AUDIO_FORMAT, buf.toString());
+		setValue(VideoMetadataType.AUDIO_FORMAT, new LocalizablePlaceholder(new ValueGenerator() {
+			public Object getValueForLocale(Locale locale) {
+				StringBuilder buf = new StringBuilder();
+				try {
+					buf.append(SampleFormat.forType(type).getDescription(locale));
+				} catch ( IllegalArgumentException e ) {
+					buf.append(type);
+				}
+
+				if ( rate != null ) {
+					buf.append(", ")
+						.append(String.format("%.1f", rate.doubleValue() / 1000.0))
+						.append(" kHz");
+				}
+				if ( size != null ) {
+					buf.append(", ").append(size)
+						.append(' ')
+						.append(getGeneralVideoMessage("bit", locale));
+				}
+				if ( count != null ) {
+					buf.append(", ");
+					switch ( count ) {
+						case 1:
+							buf.append(getGeneralVideoMessage("mono", locale));
+							break;
+						case 2:
+							buf.append(getGeneralVideoMessage("stereo", locale));
+							break;
+						default:
+							buf.append(count).append(' ')
+								.append(getGeneralVideoMessage("channels", locale));
+					}
+				}
+				return buf.toString();
+			}
+		}));
 	}
 
 	private String getTypeName(byte[] type) {
@@ -192,10 +239,16 @@ public class MP4MetadataResource extends AbstractVideoMetadataResource {
 		} catch ( UnsupportedEncodingException e ) {
 			t = new String(type);
 		}
+		return t;
+	}
+	
+	private String getGeneralVideoMessage(String key, Locale locale) {
+		ResourceBundle bundle = ResourceBundle.getBundle(
+				"magoffin/matt/meta/video/general", locale);
 		try {
-			return SampleFormat.forType(t).getDescription();
-		} catch ( IllegalArgumentException e ) {
-			return t;
+			return bundle.getString(key);
+		} catch ( MissingResourceException e ) {
+			return null;
 		}
 	}
 	
@@ -241,11 +294,12 @@ public class MP4MetadataResource extends AbstractVideoMetadataResource {
 		/**
 		 * Get a description of this format.
 		 * 
+		 * @param locale the Locale to get the description for
 		 * @return textual description
 		 */
-		public String getDescription() {
+		public String getDescription(Locale locale) {
 			ResourceBundle bundle = ResourceBundle.getBundle(
-					"magoffin/matt/meta/video/MP4MetadataResource");
+					"magoffin/matt/meta/video/mp4", locale);
 			try {
 				return bundle.getString("format."+name());
 			} catch ( MissingResourceException e ) {

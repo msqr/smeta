@@ -1,7 +1,7 @@
 /* ===================================================================
- * MP4MetadataResourceFactory.java
+ * LocalizablePlaceholder.java
  * 
- * Created Aug 23, 2010 11:05:34 AM
+ * Created Aug 24, 2010 4:25:05 PM
  * 
  * Copyright (c) 2010 Matt Magoffin.
  * 
@@ -24,29 +24,56 @@
  * ===================================================================
  */
 
-package magoffin.matt.meta.video;
+package magoffin.matt.meta.support;
 
-import java.io.File;
-import java.io.IOException;
-
-import magoffin.matt.meta.MetadataNotSupportedException;
-import magoffin.matt.meta.MetadataResource;
-import magoffin.matt.meta.MetadataResourceFactory;
+import java.util.Locale;
 
 /**
- * {@link MetadataResourceFactory} for video metadata using the MP4 format.
- *
+ * Placeholder value for a localizable value.
+ * 
+ * <p>This can be used to store parsed metadata values that need to be
+ * localized later on.</p>
+ * 
  * @author matt
  * @version $Revision$ $Date$
  */
-public class MP4MetadataResourceFactory implements MetadataResourceFactory {
-
-	/* (non-Javadoc)
-	 * @see magoffin.matt.meta.MetadataResourceFactory#getMetadataResourceInstance(java.io.File)
+public class LocalizablePlaceholder {
+	
+	private ValueGenerator generator;
+	
+	/**
+	 * Callback API for generating a value for a specific locale.
 	 */
-	public MetadataResource getMetadataResourceInstance(File file)
-			throws IOException, MetadataNotSupportedException {
-		return new IsoboxMetadataResource(file);
+	public static interface ValueGenerator {
+		
+		/**
+		 * Generate the value for a specific locale.
+		 * 
+		 * @param locale the locale to generate the value for
+		 * @return the value
+		 */
+		public Object getValueForLocale(Locale locale);
+		
+	}
+	
+	/**
+	 * Constructor.
+	 * 
+	 * @param generator the value generator
+	 */
+	public LocalizablePlaceholder(ValueGenerator generator) {
+		super();
+		this.generator = generator;
+	}
+	
+	/**
+	 * Get the value for a specific locale.
+	 * 
+	 * @param locale the locale to get the value for
+	 * @return the value
+	 */
+	public Object getValue(Locale locale) {
+		return generator.getValueForLocale(locale);
 	}
 
 }

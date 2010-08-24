@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map;
 
@@ -133,10 +134,20 @@ public abstract class AbstractMetadataResource implements MetadataResource {
 	 * what is stored with this key.</p>
 	 * 
 	 * @param key the key
+	 * @param locale the locale
 	 * @return the List associated with this key (may be <em>null</em>)
 	 */
-	protected final List<Object> getValueList(String key) {
-		return metaMap.get(key);
+	protected final List<Object> getValueList(String key, Locale locale) {
+		List<Object> values = metaMap.get(key);
+		if ( values != null ) {
+			for ( ListIterator<Object> itr = values.listIterator(); itr.hasNext(); ) {
+				Object val = itr.next();
+				if ( val instanceof LocalizablePlaceholder ) {
+					itr.set(((LocalizablePlaceholder)val).getValue(locale));
+				}
+			}
+		}
+		return values;
 	}
 	
 	/**
@@ -159,7 +170,7 @@ public abstract class AbstractMetadataResource implements MetadataResource {
 	 * @see magoffin.matt.meta.MetadataResource#getValue(java.lang.String, java.util.Locale)
 	 */
 	public Object getValue(String key, Locale locale) {
-		List<Object> values = getValueList(key);
+		List<Object> values = getValueList(key, locale);
 		if ( values == null || values.size() < 1 ) {
 			return null;
 		}
@@ -170,7 +181,7 @@ public abstract class AbstractMetadataResource implements MetadataResource {
 	 * @see magoffin.matt.meta.MetadataResource#getValues(java.lang.String, java.util.Locale)
 	 */
 	public Iterable<?> getValues(String key, Locale locale) {
-		List<Object> values = getValueList(key);
+		List<Object> values = getValueList(key, locale);
 		if ( values == null ) {
 			return Collections.emptyList();
 		}
