@@ -49,7 +49,7 @@ public class MP4MetadataResourceFactoryTest extends TestCase {
 	private final Logger log = Logger.getLogger(getClass());
 
 	/**
-	 * Test able to get MP4MetadataResource instance with a poster image.
+	 * Test able to get IsoboxMetadataResource instance with a poster image.
 	 * @throws Exception if error occurs
 	 */
 	public void testVideoWithPoster() throws Exception {
@@ -58,7 +58,7 @@ public class MP4MetadataResourceFactoryTest extends TestCase {
 				"magoffin/matt/meta/video/IMG_0670.M4V");
 		File file = new File(URLDecoder.decode(u.getFile(), "UTF-8"));
 		MetadataResource mResource = handleFile(factory, file);
-		assertEquals(MP4MetadataResource.class, mResource.getClass());
+		assertEquals(IsoboxMetadataResource.class, mResource.getClass());
 		
 		/*VideoMetadataResource aResource = (VideoMetadataResource)mResource;
 		
@@ -69,7 +69,7 @@ public class MP4MetadataResourceFactoryTest extends TestCase {
 		MetadataImage poster = (MetadataImage)o;
 		assertEquals("image/png", poster.getMimeType());
 		
-		File coverOutput = File.createTempFile("MP4MetadataResource-Poster-", 
+		File coverOutput = File.createTempFile("IsoboxMetadataResource-Poster-", 
 				"." +poster.getMimeType().substring(
 						poster.getMimeType().indexOf('/')+1));
 		log.debug("Creating movie poster file [" +coverOutput.getAbsolutePath() +"]");
