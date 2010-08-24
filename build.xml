@@ -550,10 +550,10 @@
 	
 	<!-- Copy environment properties (to catch local env) -->
 	<target name="svn-prepare">
-		<mkdir dir="${svn.dir.build}/${dir.env}"/>
+		<!--mkdir dir="${svn.dir.build}/${dir.env}"/>
 		<copy todir="${svn.dir.build}/${dir.env}">
 			<fileset dir="${dir.base}/${dir.env}" includes="**" excludes="README*"/>
-		</copy>
+		</copy-->
 	</target>
 
 	<target name="svn-build" depends="clean,svn-prepare" description="Build from SVN tag versions">
