@@ -69,15 +69,11 @@ import com.coremedia.iso.boxes.sampleentry.VisualSampleEntry;
  */
 public class IsoboxMetadataResource extends AbstractVideoMetadataResource {
 	
-	//private Map<String, Object> internalData
-
 	/**
 	 * Construct from a File.
 	 * 
-	 * @param f
-	 *            the file
-	 * @throws IOException
-	 *             if an IO error occurs
+	 * @param f the file
+	 * @throws IOException if an IO error occurs
 	 */
 	public IsoboxMetadataResource(File f) throws IOException {
 		RandomAccessDataSource dataSource = null;
