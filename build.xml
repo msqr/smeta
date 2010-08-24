@@ -64,7 +64,7 @@
 	<property name="svn.username" value=""/>
 	<property name="svn.password" value=""/>
 	<property name="svn.revision" value="HEAD"/>
-	<property name="svn.dir.build" value="${dir.build}/svn"/>
+	<property name="svn.dir.build" value="${dir.base}/build/svn"/>
 	
 	<tstamp>
 		<format property="build.time" pattern="MM/dd/yyyy hh:mm aa z" />
@@ -198,7 +198,7 @@
 	</target>
 
 	<target name="clean" description="Delete build files">
-		<delete dir="${dir.build}" />
+		<delete dir="${dir.build}"/>
 	</target>
 
 	<target name="dist-jar" description="Generate a distribution JAR"
@@ -550,10 +550,10 @@
 	
 	<!-- Copy environment properties (to catch local env) -->
 	<target name="svn-prepare">
-		<mkdir dir="${svn.dir.build}/${dir.env}"/>
+		<!--mkdir dir="${svn.dir.build}/${dir.env}"/>
 		<copy todir="${svn.dir.build}/${dir.env}">
 			<fileset dir="${dir.base}/${dir.env}" includes="**" excludes="README*"/>
-		</copy>
+		</copy-->
 	</target>
 
 	<target name="svn-build" depends="clean,svn-prepare" description="Build from SVN tag versions">
