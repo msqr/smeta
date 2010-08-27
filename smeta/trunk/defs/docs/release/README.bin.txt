@@ -16,7 +16,8 @@ sMeta presently supports the following file formats:
   1) MP3 - ID3 (versions 1, 1.1, 2.2, 2.3, 2.4)
   2) JPEG - EXIF
   3) PNG
-  4) Video, via Java Media Framework or QuickTime
+  4) MP4 video, via mp4parser http://code.google.com/p/mp4parser/
+  5) Video, via Java Media Framework or QuickTime
 
 
 INSTALLATION ==========================================================
