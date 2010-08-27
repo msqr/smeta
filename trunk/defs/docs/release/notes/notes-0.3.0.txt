@@ -1,0 +1,18 @@
+sMeta Release Notes
+
+@VERSION@ @BUILD_DATE@
+
+- Implement ID3v2 support for MP3 files.
+
+- Fixes to jid3lib, including proper handling of Unicode encoded text
+  tags and performance improvements when handling large tags (i.e.
+  embedded images).
+  
+- Fix handling of JPEG image mime type in ID3v2.2.
+  
+- Implement EXIF make/model support via configurable properties. Add
+  direct support for Canon G5 and Canon 20D models.
+  
+- More test cases.
+
+- Many JavaDoc updates, fixes.
