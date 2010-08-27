@@ -1,0 +1,7 @@
+sMeta Release Notes
+
+@VERSION@ @BUILD_DATE@
+
+- Add GPS longitude/latitude support for EXIF metadata.
+
+- Switch to Subversion for source control.
