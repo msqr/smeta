@@ -1,0 +1,138 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<!-- $Id: getting-started.html,v 1.2 2007/02/03 04:27:10 matt Exp $ -->
+<head>
+	<title>sMeta: simple metadata API for Java</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+	<link rel="stylesheet" type="text/css" href="whoosh-smeta.css"/>
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 11.0px Monaco; color: #2a00ff}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 11.0px Monaco; min-height: 15.0px}
+    p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 11.0px Monaco; color: #3f7f5f}
+    p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 11.0px Monaco}
+    p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 11.0px Monaco; color: #7f0055}
+    span.s1 {color: #000000}
+    span.s2 {color: #7f0055}
+    span.s3 {color: #0000c0}
+    span.s4 {color: #2a00ff}
+    span.Apple-tab-span {white-space:pre}
+  </style>
+</head>
+<body class="noindex">
+
+<h1>sMeta: Getting Started</h1>
+
+<p>sMeta is a very simple, 
+extensible Java API for reading metadata from files of various formats, 
+such as ID3 tags from MP3 files, EXIF data from JPEG files, chunks 
+from PNG files, etc.</p>
+
+<h2>Installation</h2>
+
+<p>
+sMeta is released as a JAR file, which you can add to your application
+classpath to make use of. Some of the metadata implementations depend
+on other JARs (included with this release in the "lib" directory). If you 
+need to use those implementations, the dependant JARs must be included in 
+your application classpath, too. See the JavaDoc documentation for the 
+<code>MetadataResource</code> in question, it will say if it depends on 
+some external library.
+</p>
+
+<h2>Usage</h2>
+
+<p>The general use of sMeta follows this pattern:</p>
+
+<ol>
+	<li>Get a <code><a href="http://smeta.sourceforge.net/api/magoffin/matt/meta/MetadataResourceFactoryManager.html">MetadataResourceFactoryManager</a></code> instance.</li>
+	<li>Get a <code><a href="http://smeta.sourceforge.net/api/magoffin/matt/meta/MetadataResourceFactory.html">MetadataResourceFactory</a></code> for this file type you are using.</li>
+	<li>Get a <code><a href="http://smeta.sourceforge.net/api/magoffin/matt/meta/MetadataResource.html">MetadataResource</a></code> for this file.</li>
+</ol>
+
+<p>Here is an example snippet of code that accomplishes these steps:</p>
+
+<div class="code-ex">
+<p class="p1"><span class="s1">String filePath = </span>"/path/to/a/file.mp3"<span class="s1">;</span></p>
+<p class="p2"><br /></p>
+<p class="p3">// 1: get a MetadataResourceFactoryManager instance</p>
+<p class="p4">MetadataResourceFactoryManager manager<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span>= MetadataResourceFactoryManager.getDefaultManagerInstance();</p>
+<p class="p2"><br /></p>
+<p class="p4">File oneFile = <span class="s2">new</span> File(filePath);</p>
+<p class="p2"><br /></p>
+<p class="p3">// 2: get a MetadataResourceFactory for this file type</p>
+<p class="p4">MetadataResourceFactory factory<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span>= manager.getMetadataResourceFactory(oneFile);</p>
+<p class="p2"><br /></p>
+<p class="p5">try<span class="s1"> {</span></p>
+<p class="p3"><span class="s1"><span class="Apple-tab-span">	</span></span>// 3: get a MetadataResource for this file</p>
+<p class="p4"><span class="Apple-tab-span">	</span>MetadataResource metaResource<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>= factory.getMetadataResourceInstance(oneFile);</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="s1"><span class="Apple-tab-span">	</span></span>// 4: print out all available metadata</p>
+<p class="p4"><span class="Apple-tab-span">	</span>Iterable&lt;String&gt; keys = metaResource.getParsedKeys();</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s2">for</span> ( String key : keys ) {</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Object metaValue = metaResource.getValue(key, Locale.getDefault());</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// do something with metaValue here...</p>
+<p class="p4"><span class="Apple-tab-span">	</span>}</p>
+<p class="p4">} <span class="s2">catch</span> ( MetadataNotSupportedException e ) {</p>
+<p class="p4"><span class="Apple-tab-span">	</span>System.<span class="s3">err</span>.println(<span class="s4">"File ["</span> +oneFile.getAbsolutePath()<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>+</span>"] is not supported by the ["<span class="s1"><span class="Apple-converted-space"> </span></span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>+factory.getClass().getName() +<span class="s4">"] factory"</span>);</p>
+<p class="p4">}</p>
+</div>
+
+<h2>Configuration</h2>
+
+<p>
+sMeta's <code><a href="http://smeta.sourceforge.net/api/magoffin/matt/meta/MetadataResourceFactoryManager.html">MetadataResourceFactoryManager</a></code> uses a set of properties files 
+to register support of different file types and MIME types. It will 
+look in up to three locations for a given type registration, and use 
+the first suitable implementation found. The search paths are classpath
+relative:
+</p>
+
+<ol>
+	<li>MetadataResourceFactoryManager's configured managerProperties path</li>
+	<li>smeta.properties</li>
+	<li>META-INF/smeta.properties</li>
+</ol>
+
+<p>The format of the properties file is just</p>
+
+<div class="code">smeta.factory.<b>KEY</b> = <b>CLASS</b></div>
+
+<p>
+where KEY is either a file extension or a MIME type. The CLASS is the
+fully-qualified class name of something that implements the
+magoffin.matt.meta.MetadataResourceFactory interface. For example
+(class names shorted for brevity):
+</p>
+
+<div class="code">smeta.factory.mp3 = meta.audio.ID3MetadataResourceFactory
+smeta.factory.audio/mpeg = meta.audio.ID3MetadataResourceFactory
+smeta.factory.jpg = meta.image.EXIFMetadataResourceFactory
+smeta.factory.image/jpeg = meta.image.EXIFMetadataResourceFactory</div>
+
+<p>The sMeta JAR file comes with a <code>META-INF/smeta.properties</code> file 
+pre-configured for the standard built-in types supported by sMeta. If you wish 
+to customize or extend these settings, the easiest way is to create a new 
+<code>smeta.properties</code> file and place that on your classpath. You can 
+override any of the built-in settings here, as this configuration will be 
+looked in before the build-in configuration.</p>
+
+<div class="footer">
+$Id: getting-started.html,v 1.2 2007/02/03 04:27:10 matt Exp $
+</div>
+
+<div style="margin-top: 2em;">
+<a href="http://sourceforge.net/projects/smeta/"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=187135&amp;type=1" 
+	width="88" height="31" alt="SourceForge.net Logo" /></a>
+</div>
+</body>
+</html>
+
+
+
+

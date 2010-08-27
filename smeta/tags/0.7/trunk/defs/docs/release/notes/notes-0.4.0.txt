@@ -1,0 +1,7 @@
+sMeta Release Notes
+
+@VERSION@ @BUILD_DATE@
+
+- Implement JMF support for video files.
+
+- Implement QuickTime support for video files.
