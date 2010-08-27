@@ -701,8 +701,11 @@
 		<echo message="Copying libraries"/>
 		<mkdir dir="${release-dir}/lib"/>
 		<copy todir="${release-dir}/lib" flatten="true">
-			<fileset dir="${svn.dir.build}/lib" 
-				includes="log4j*.jar,metadata-extractor*.jar" excludes="**/*-src.jar"/>
+			<fileset dir="${svn.dir.build}/lib" excludes="**/*-src.jar">
+				<include name="log4j*.jar"/>
+				<include name="metadata-extractor*.jar"/>
+				<include name="isoviewer*.jar"/>
+			</fileset>
 		</copy>
 		
 		<!-- copy JavaDoc -->
