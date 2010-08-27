@@ -1,0 +1,6 @@
+sMeta Release Notes
+
+@VERSION@ @BUILD_DATE@
+
+- Support MP4 video/audio metadata extraction without using QuickTime
+  or JMF.
