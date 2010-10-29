@@ -96,6 +96,13 @@
 		<pathelement location="${dir.compile.test}"/>
 		<path refid="lib.path"/>
 	</path>
+	
+	<fileset id="jars.app" dir="${dir.lib}">
+		<include name="isoviewer-*.jar"/>
+		<include name="metadata-extractor-*.jar"/>
+		<include name="log4j*.jar"/>
+		<exclude name="*-src.jar"/>
+	</fileset>
 
 	<taskdef resource = "emma_ant.properties" classpathref="emma.lib.path"/>
 	
@@ -199,6 +206,25 @@
 
 	<target name="clean" description="Delete build files">
 		<delete dir="${dir.build}"/>
+	</target>
+	
+	<!-- The app-jar target will include some dependencies directly in the smeta JAR, so
+	     you can do a "java -jar smeta-app.jar <file>" to easily see the metadata of
+	     arbitrary files from the command line. -->
+	<target name="app-jar" description="Generate a distribution JAR with dependencies built in"
+		depends="compile">
+		<mkdir dir="${dir.dist}"/>
+		<jar destfile="${dir.dist}/${app.name}-app.jar">
+			<manifest>
+				<attribute name="Main-Class" value="magoffin.matt.meta.util.Display"/>
+			</manifest>
+			<fileset dir="${dir.compile}">
+				<include name="**"/>
+			</fileset>
+			
+			<!-- include dependencies -->
+			<zipgroupfileset refid="jars.app"/>
+		</jar>
 	</target>
 
 	<target name="dist-jar" description="Generate a distribution JAR"
