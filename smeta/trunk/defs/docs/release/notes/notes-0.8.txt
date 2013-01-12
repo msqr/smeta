@@ -1,0 +1,5 @@
+sMeta Release Notes
+
+@VERSION@ @BUILD_DATE@
+
+- Add support for Fujifilm XF1.

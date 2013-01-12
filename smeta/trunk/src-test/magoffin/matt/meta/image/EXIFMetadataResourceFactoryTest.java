@@ -31,16 +31,14 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.util.Iterator;
 import java.util.Locale;
-
 import junit.framework.TestCase;
 import magoffin.matt.meta.MetadataNotSupportedException;
 import magoffin.matt.meta.MetadataResource;
 import magoffin.matt.meta.image.camera.Canon;
 import magoffin.matt.meta.image.camera.Canon20D;
 import magoffin.matt.meta.image.camera.CanonG5;
-
+import magoffin.matt.meta.image.camera.fujifilm.XF1;
 import org.apache.log4j.Logger;
-
 import com.drew.imaging.jpeg.JpegMetadataReader;
 import com.drew.imaging.jpeg.JpegProcessingException;
 import com.drew.metadata.Directory;
@@ -91,9 +89,7 @@ public class EXIFMetadataResourceFactoryTest extends TestCase {
 		
 		Iterable<String> keys = mResource.getParsedKeys();
 		assertNotNull(keys);
-		int size = 0;
 		for ( String key : keys ) {
-			size++;
 			log.debug("Key [" +key +"] = " +mResource.getValue(key, Locale.US));
 		}
 	}
@@ -113,9 +109,7 @@ public class EXIFMetadataResourceFactoryTest extends TestCase {
 		
 		Iterable<String> keys = mResource.getParsedKeys();
 		assertNotNull(keys);
-		int size = 0;
 		for ( String key : keys ) {
-			size++;
 			log.debug("Key [" +key +"] = " +mResource.getValue(key, Locale.US));
 		}
 	}
@@ -135,9 +129,7 @@ public class EXIFMetadataResourceFactoryTest extends TestCase {
 		
 		Iterable<String> keys = mResource.getParsedKeys();
 		assertNotNull(keys);
-		int size = 0;
 		for ( String key : keys ) {
-			size++;
 			log.debug("Key [" +key +"] = " +mResource.getValue(key, Locale.US));
 		}
 	}
@@ -158,10 +150,31 @@ public class EXIFMetadataResourceFactoryTest extends TestCase {
 		
 		Iterable<String> keys = mResource.getParsedKeys();
 		assertNotNull(keys);
-		int size = 0;
 		for ( String key : keys ) {
-			size++;
 			log.debug("Key [" +key +"] = " +mResource.getValue(key, Locale.US));
+		}
+	}
+
+	/**
+	 * Test able to get JPEG EXIF resource for an Fujifilm XF1 image.
+	 * 
+	 * @throws Exception
+	 *         if error occurs
+	 */
+	public void testJpegEXIFFujifilmXF1() throws Exception {
+		EXIFMetadataResourceFactory factory = new EXIFMetadataResourceFactory();
+		URL u = getClass().getClassLoader().getResource("magoffin/matt/meta/image/DSCF0209.JPG");
+		File file = new File(URLDecoder.decode(u.getFile(), "UTF-8"));
+		new SampleUsage(file);
+		MetadataResource mResource = factory.getMetadataResourceInstance(file);
+		assertNotNull(mResource);
+		log.debug("Got MetadataResource implementation: " + mResource.getClass().getName());
+		assertSame(XF1.class, mResource.getClass());
+
+		Iterable<String> keys = mResource.getParsedKeys();
+		assertNotNull(keys);
+		for ( String key : keys ) {
+			log.debug("Key [" + key + "] = " + mResource.getValue(key, Locale.US));
 		}
 	}
 
