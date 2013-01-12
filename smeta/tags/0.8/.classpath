@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="environment"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="src-test"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3.8.1"/>
+	<classpathentry kind="lib" path="lib/log4j-1.2.13.jar"/>
+	<classpathentry kind="lib" path="lib/metadata-extractor-2.3.1.jar" sourcepath="lib/metadata-extractor-2.3.1-src.jar"/>
+	<classpathentry kind="lib" path="lib/jmf-2.1.1e.jar" sourcepath="lib/jmf-2.1.1e-src.jar"/>
+	<classpathentry kind="lib" path="lib/QTJSupport.jar"/>
+	<classpathentry kind="lib" path="lib/QTJava.zip"/>
+	<classpathentry kind="lib" path="lib/fobs4jmf.jar"/>
+	<classpathentry kind="lib" path="lib/isoviewer-1.0.jar" sourcepath="lib/isoviewer-1.0-src.jar"/>
+	<classpathentry kind="lib" path="lib/bento4.jar" sourcepath="lib/bento4-src.jar"/>
+	<classpathentry kind="output" path="build/eclipse"/>
+</classpath>
