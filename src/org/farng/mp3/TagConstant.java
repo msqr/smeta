@@ -1145,7 +1145,7 @@ public class TagConstant {
         languageIdToString.put("gre", "Greek, Modern (1453-)");
         languageIdToString.put("grn", "Guarani");
         languageIdToString.put("guj", "Gujarati");
-        languageIdToString.put("gwi", "Gwich´in");
+		languageIdToString.put("gwi", "Gwichâ€™in");
         languageIdToString.put("hai", "Haida");
         languageIdToString.put("hau", "Hausa");
         languageIdToString.put("haw", "Hawaiian");
@@ -1286,7 +1286,7 @@ public class TagConstant {
         languageIdToString.put("niu", "Niuean");
         languageIdToString.put("nld", "Dutch");
         languageIdToString.put("nno", "Norwegian Nynorsk");
-        languageIdToString.put("nob", "Norwegian Bokmål");
+		languageIdToString.put("nob", "Norwegian BokmÃ¥l");
         languageIdToString.put("non", "Norse, Old");
         languageIdToString.put("nor", "Norwegian");
         languageIdToString.put("nso", "Sotho, Northern");
@@ -1296,7 +1296,7 @@ public class TagConstant {
         languageIdToString.put("nyn", "Nyankole");
         languageIdToString.put("nyo", "Nyoro");
         languageIdToString.put("nzi", "Nzima");
-        languageIdToString.put("oci", "Occitan (post 1500); Provençal");
+		languageIdToString.put("oci", "Occitan (post 1500); ProvenÃ§al");
         languageIdToString.put("oji", "Ojibwa");
         languageIdToString.put("ori", "Oriya");
         languageIdToString.put("orm", "Oromo");
@@ -1321,7 +1321,7 @@ public class TagConstant {
         languageIdToString.put("pon", "Pohnpeian");
         languageIdToString.put("por", "Portuguese");
         languageIdToString.put("pra", "Prakrit languages");
-        languageIdToString.put("pro", "Provençal, Old (to 1500)");
+		languageIdToString.put("pro", "ProvenÃ§al, Old (to 1500)");
         languageIdToString.put("pus", "Pushto");
         languageIdToString.put("que", "Quechua");
         languageIdToString.put("raj", "Rajasthani");
@@ -1426,7 +1426,7 @@ public class TagConstant {
         languageIdToString.put("vai", "Vai");
         languageIdToString.put("ven", "Venda");
         languageIdToString.put("vie", "Vietnamese");
-        languageIdToString.put("vol", "Volapük");
+		languageIdToString.put("vol", "VolapÃ¼k");
         languageIdToString.put("vot", "Votic");
         languageIdToString.put("wak", "Wakashan languages");
         languageIdToString.put("wal", "Walamo");
