@@ -952,7 +952,7 @@
 	
 	<!-- create binary release -->
 	<target name="git-bin-release" description="Build binary release TAR from git tag versions"
-		depends="git-build,git-javadoc">
+		depends="git-build,git-javadoc,ivy-init">
 		
 		<property name="release-dir-name"
 			value="${app.archive.name}"/>
