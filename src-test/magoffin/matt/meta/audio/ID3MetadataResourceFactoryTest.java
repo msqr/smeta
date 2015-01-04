@@ -35,12 +35,10 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.Locale;
-
 import junit.framework.TestCase;
 import magoffin.matt.meta.MetadataImage;
 import magoffin.matt.meta.MetadataNotSupportedException;
 import magoffin.matt.meta.MetadataResource;
-
 import org.apache.log4j.Logger;
 
 /**
@@ -106,6 +104,14 @@ public class ID3MetadataResourceFactoryTest extends TestCase {
 		File file = new File(URLDecoder.decode(u.getFile(), "UTF-8"));
 		MetadataResource mResource = handleFile(factory, file);
 		assertEquals(ID3v2_2MetadataResource.class, mResource.getClass());
+
+		// verify got image
+		AudioMetadataResource aResource = (AudioMetadataResource) mResource;
+		Object o = aResource.getValue(AudioMetadataType.ALBUM_COVER, Locale.US);
+		assertNotNull(o);
+		assertTrue(o instanceof MetadataImage);
+		MetadataImage albumCover = (MetadataImage) o;
+		assertEquals("image/jpeg", albumCover.getMimeType());
 	}
 
 	/**
@@ -119,6 +125,14 @@ public class ID3MetadataResourceFactoryTest extends TestCase {
 		File file = new File(URLDecoder.decode(u.getFile(), "UTF-8"));
 		MetadataResource mResource = handleFile(factory, file);
 		assertEquals(ID3v2_3MetadataResource.class, mResource.getClass());
+
+		// verify got image
+		AudioMetadataResource aResource = (AudioMetadataResource) mResource;
+		Object o = aResource.getValue(AudioMetadataType.ALBUM_COVER, Locale.US);
+		assertNotNull(o);
+		assertTrue(o instanceof MetadataImage);
+		MetadataImage albumCover = (MetadataImage) o;
+		assertEquals("image/jpeg", albumCover.getMimeType());
 	}
 
 	/**

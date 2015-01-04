@@ -193,13 +193,14 @@ implements AudioMetadataResource {
 		MP3MetadataContainer body = meta.getBody();
 		String mime = "image/jpeg";
 		if ( body.getObject("MIME Type") != null ) {
-			mime = body.getObject("MIME Type").toString();
+			mime = body.getObject("MIME Type").toString().toLowerCase();
 		} else if ( body.getObject("Image Format") != null ) {
 			String format = body.getObject("Image Format").toString().toLowerCase();
-			if ( "jpg".equals(format) ) {
-				format = "jpeg";
-			}
 			mime = "image/" + format;
+		}
+		if ( "image/jpg".equals(mime) ) {
+			// some MP3s report this, but this is not correct and ImageIO will not handle it
+			mime = "image/jpeg";
 		}
 		byte[] pic = (byte[]) body.getObject("Picture Data");
 		if ( pic != null && pic.length > 0 ) {
