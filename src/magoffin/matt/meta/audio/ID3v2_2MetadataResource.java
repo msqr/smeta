@@ -29,12 +29,10 @@ package magoffin.matt.meta.audio;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.Iterator;
-
 import magoffin.matt.meta.MetadataImage;
 import magoffin.matt.meta.MetadataResource;
 import magoffin.matt.meta.support.AbstractEnumMetadataResource;
 import magoffin.matt.meta.support.BasicMetadataImage;
-
 import org.farng.mp3.MP3AudioMetadata;
 import org.farng.mp3.MP3FileHelper;
 import org.farng.mp3.MP3MetadataContainer;
@@ -59,7 +57,7 @@ implements AudioMetadataResource {
 	private static final byte VERSION_MPEG1 = 1;
 	private static final byte VERSION_MPEG2 = 0;
 	
-	private RandomAccessFile file;
+	private final RandomAccessFile file;
 
 	/**
 	 * Construct with a RandomAccessFile.
@@ -178,21 +176,33 @@ implements AudioMetadataResource {
 			if ( id == null || !id.startsWith("PIC") ) {
 				continue;
 			}
-			MP3MetadataContainer body = meta.getBody();
-			String mime = "image/jpeg";
-			String imageFormat = (String)body.getObject("Image Format");
-			if ( imageFormat != null ) {
-				String format = imageFormat.toLowerCase();
-				if ( "jpg".equals(format) ) {
-					format = "jpeg";
-				}
-				mime = "image/" +format;
+			addMetadataFromPictureData(meta, AudioMetadataType.ALBUM_COVER);
+		}
+	}
+
+	/**
+	 * Extract a <em>Picture Data</em> object from the metadata and save that as
+	 * a {@link BasicMetadataImage} on the given type key.
+	 * 
+	 * @param meta
+	 *        the metadata to extract the picture data from
+	 * @param type
+	 *        the metadata key to use
+	 */
+	protected void addMetadataFromPictureData(MP3MetadataItem meta, AudioMetadataType type) {
+		MP3MetadataContainer body = meta.getBody();
+		String mime = "image/jpeg";
+		String imageFormat = (String) body.getObject("Image Format");
+		if ( imageFormat != null ) {
+			String format = imageFormat.toLowerCase();
+			if ( "jpg".equals(format) ) {
+				format = "jpeg";
 			}
-			byte[] pic = (byte[])body.getObject("Picture Data");
-			if ( pic != null && pic.length > 0 ) {
-				setValue(AudioMetadataType.ALBUM_COVER, 
-						new BasicMetadataImage(mime, pic));
-			}
+			mime = "image/" + format;
+		}
+		byte[] pic = (byte[]) body.getObject("Picture Data");
+		if ( pic != null && pic.length > 0 ) {
+			setValue(type, new BasicMetadataImage(mime, pic));
 		}
 	}
 

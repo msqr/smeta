@@ -29,16 +29,12 @@ package magoffin.matt.meta.audio;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.Iterator;
-
-import org.farng.mp3.MP3MetadataContainer;
+import magoffin.matt.meta.MetadataImage;
+import magoffin.matt.meta.MetadataResource;
 import org.farng.mp3.MP3MetadataItem;
 import org.farng.mp3.MP3Tag;
 import org.farng.mp3.TagException;
 import org.farng.mp3.id3.ID3v2_3;
-
-import magoffin.matt.meta.MetadataImage;
-import magoffin.matt.meta.MetadataResource;
-import magoffin.matt.meta.support.BasicMetadataImage;
 
 /**
  * {@link MetadataResource} implementation for ID3v2.3 resources.
@@ -94,14 +90,7 @@ public class ID3v2_3MetadataResource extends ID3v2_2MetadataResource {
 			if ( id == null || !id.startsWith("APIC") ) {
 				continue;
 			}
-			MP3MetadataContainer body = meta.getBody();
-			String mime = (String)body.getObject("MIME Type");
-			byte[] pic = (byte[])body.getObject("Picture Data");
-			if ( mime != null && pic != null && pic.length > 0 ) {
-				setValue(AudioMetadataType.ALBUM_COVER, 
-						new BasicMetadataImage(mime, pic));
-				return;
-			}
+			addMetadataFromPictureData(meta, AudioMetadataType.ALBUM_COVER);
 		}
 	}
 
