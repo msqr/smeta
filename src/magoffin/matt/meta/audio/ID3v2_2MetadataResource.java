@@ -192,9 +192,10 @@ implements AudioMetadataResource {
 	protected void addMetadataFromPictureData(MP3MetadataItem meta, AudioMetadataType type) {
 		MP3MetadataContainer body = meta.getBody();
 		String mime = "image/jpeg";
-		String imageFormat = (String) body.getObject("Image Format");
-		if ( imageFormat != null ) {
-			String format = imageFormat.toLowerCase();
+		if ( body.getObject("MIME Type") != null ) {
+			mime = body.getObject("MIME Type").toString();
+		} else if ( body.getObject("Image Format") != null ) {
+			String format = body.getObject("Image Format").toString().toLowerCase();
 			if ( "jpg".equals(format) ) {
 				format = "jpeg";
 			}
