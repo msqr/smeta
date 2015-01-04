@@ -212,7 +212,7 @@
 		</emmajava>
 	</target>
 
-	<target name="javadoc" depends="init"
+	<target name="javadoc" depends="init,compile.path"
 		description="Generate JavaDoc API">
 		<mkdir dir="${dir.javadoc}"/>
 		<javadoc packagenames="magoffin.*,org.farng.*"
