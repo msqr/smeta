@@ -19,7 +19,7 @@
 
   $Id: build.xml,v 1.13 2007/01/30 00:44:34 matt Exp $   
 -->
-<project name="sMeta" default="help">
+<project name="sMeta" default="help" xmlns:ivy="antlib:org.apache.ivy.ant">
 
 	<property file="build.properties" />
 
@@ -78,11 +78,6 @@
 		</fileset>
 	</path>
 		
-	<path id="compile.path">
-		<pathelement location="${dir.build}"/>
-		<path refid="lib.path"/>
-	</path>
-
 	<path id="source.path">
 		<pathelement location="${dir.source}"/>
 	</path>
@@ -106,6 +101,20 @@
 
 	<taskdef resource = "emma_ant.properties" classpathref="emma.lib.path"/>
 	
+	<!-- Ivy integration -->
+
+	<target name="ivy-init">
+		<taskdef resource="org/apache/ivy/ant/antlib.xml"
+			uri="antlib:org.apache.ivy.ant"
+			classpath="${dir.lib}/ivy-2.4.0.jar"/>
+		<ivy:settings file="${dir.lib}/ivysettings.xml"/>
+	</target>
+	
+	<target name="lib-resolve" depends="ivy-init">
+		<echo message="[====&gt; Resolving dependencies (compile) &lt;====]"/>
+		<ivy:resolve file="${basedir}/ivy.xml" type="jar,bundle" conf="compile"/>
+	</target>
+	
 	<target name="init">
 		<mkdir dir="${dir.build}" />
 	</target>
@@ -124,7 +133,16 @@
 		</copy>
 	</target>
 
-	<target name="compile" depends="prepare" description="Compile source files">
+	<target name="compile.path" depends="lib-resolve">
+		<ivy:cachepath pathid="ivy.lib.path" type="jar,bundle" conf="compile"/>
+		<path id="compile.path">
+			<!--pathelement location="${dir.compile.dest}"/-->
+			<path refid="ivy.lib.path"/>
+			<path refid="lib.path"/>
+		</path>
+	</target>
+
+	<target name="compile" depends="compile.path,prepare" description="Compile source files">
 		<mkdir dir="${dir.compile}"/>
 		<!--property name="cp" refid="compile.path"/>
 		<echo>Path: ${cp}</echo-->

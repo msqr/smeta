@@ -28,44 +28,42 @@ package magoffin.matt.meta.video;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.Set;
-
 import magoffin.matt.meta.MetadataResource;
 import magoffin.matt.meta.support.LocalizablePlaceholder;
 import magoffin.matt.meta.support.LocalizablePlaceholder.ValueGenerator;
-
-import com.coremedia.iso.FileRandomAccessDataSource;
 import com.coremedia.iso.IsoFile;
-import com.coremedia.iso.RandomAccessDataSource;
 import com.coremedia.iso.boxes.Box;
-import com.coremedia.iso.boxes.BoxContainer;
+import com.coremedia.iso.boxes.Container;
 import com.coremedia.iso.boxes.MediaBox;
 import com.coremedia.iso.boxes.MediaHeaderBox;
+import com.coremedia.iso.boxes.MediaInformationBox;
 import com.coremedia.iso.boxes.MovieBox;
 import com.coremedia.iso.boxes.MovieHeaderBox;
 import com.coremedia.iso.boxes.SampleDescriptionBox;
 import com.coremedia.iso.boxes.SampleSizeBox;
+import com.coremedia.iso.boxes.SampleTableBox;
 import com.coremedia.iso.boxes.TrackBox;
-import com.coremedia.iso.boxes.TrackHeaderBox;
-import com.coremedia.iso.boxes.TrackMetaData;
 import com.coremedia.iso.boxes.sampleentry.AudioSampleEntry;
 import com.coremedia.iso.boxes.sampleentry.SampleEntry;
 import com.coremedia.iso.boxes.sampleentry.VisualSampleEntry;
+import com.googlecode.mp4parser.DataSource;
+import com.googlecode.mp4parser.FileDataSourceImpl;
 
 /**
  * {@link MetadataResource} for video metadata using mp4parser.
  * 
  * <p>
- * See <a href="http://code.google.com/p/mp4parser/">mp4parser</a>.
+ * See <a href="https://github.com/sannies/mp4parser">mp4parser</a>.
  * </p>
  * 
  * @author matt
- * @version $Revision$ $Date$
+ * @version 1.2
  */
 public class IsoboxMetadataResource extends AbstractVideoMetadataResource {
 	
@@ -76,9 +74,9 @@ public class IsoboxMetadataResource extends AbstractVideoMetadataResource {
 	 * @throws IOException if an IO error occurs
 	 */
 	public IsoboxMetadataResource(File f) throws IOException {
-		RandomAccessDataSource dataSource = null;
+		DataSource dataSource = null;
 		try {
-			dataSource = new FileRandomAccessDataSource(f);
+			dataSource = new FileDataSourceImpl(f);
 			extractMetadata(dataSource);
 		} finally {
 			if (dataSource != null) {
@@ -87,22 +85,20 @@ public class IsoboxMetadataResource extends AbstractVideoMetadataResource {
 		}
 	}
 	
-	private <T extends Box> T getFirstBox(BoxContainer container, Class<T> clazz) {
+	private <T extends Box> T getFirstBox(Container container, Class<T> clazz) {
 		if ( container == null ) {
 			return null;
 		}
-		T[] boxes = container.getBoxes(clazz);
-		if ( boxes == null || boxes.length < 1 ) {
+		List<T> boxes = container.getBoxes(clazz);
+		if ( boxes == null || boxes.size() < 1 ) {
 			return null;
 		}
-		return boxes[0];
+		return boxes.get(0);
 	}
 	
-	private void extractMetadata(RandomAccessDataSource dataSource)
+	private void extractMetadata(DataSource dataSource)
 	throws IOException {
 		IsoFile isoFile = new IsoFile(dataSource);
-		isoFile.parse();
-		isoFile.parseMdats();
 		
 		MovieBox movie = getFirstBox(isoFile, MovieBox.class);
 		MovieHeaderBox movieHeader = getFirstBox(movie, MovieHeaderBox.class);
@@ -116,12 +112,12 @@ public class IsoboxMetadataResource extends AbstractVideoMetadataResource {
 		setValue(VideoMetadataType.DURATION, Long.valueOf(ms));
 		setValue(VideoMetadataType.DURATION_TIME, getDurationTime(ms));
 
-		TrackBox[] tracks = movie.getBoxes(TrackBox.class);
+		List<TrackBox> tracks = movie.getBoxes(TrackBox.class);
 		for ( TrackBox trackBox : tracks ) {
-			TrackHeaderBox trackHeader = trackBox.getTrackHeaderBox();
-			TrackMetaData<TrackBox> trackMeta = movie.getTrackMetaData(trackHeader.getTrackId());
+			SampleTableBox sampleTableBox = getFirstBox(getFirstBox(getFirstBox(trackBox, MediaBox.class), 
+					MediaInformationBox.class), SampleTableBox.class);
 			MediaHeaderBox header = getFirstBox(getFirstBox(trackBox, MediaBox.class), MediaHeaderBox.class);
-			SampleDescriptionBox sampleBox = trackMeta.getSampleDescriptionBox();
+			SampleDescriptionBox sampleBox = sampleTableBox.getSampleDescriptionBox();
 			SampleEntry sampleEntry = getFirstBox(sampleBox, SampleEntry.class);
 			if ( sampleEntry instanceof AudioSampleEntry ) {
 				extractAudioMetadata(header, (AudioSampleEntry)sampleEntry);
@@ -130,7 +126,7 @@ public class IsoboxMetadataResource extends AbstractVideoMetadataResource {
 			}
 		}
 		/*
-		Box box = (Box) get(isoFile, "/moov/udta/meta/ilst/©nam");
+		Box box = (Box) get(isoFile, "/moov/udta/meta/ilst/ï¿½nam");
 		if (box instanceof AppleTrackTitleBox) {
 			AppleTrackTitleBox titleBox = (AppleTrackTitleBox) box;
 			System.out.println("Track title: " + titleBox.getTrackTitle());
@@ -139,7 +135,7 @@ public class IsoboxMetadataResource extends AbstractVideoMetadataResource {
 	
 	private void extractVideoMetadata(MediaHeaderBox header, SampleDescriptionBox sampleDescBox, 
 			VisualSampleEntry visualEntry) {
-		final String type = getTypeName(visualEntry.getType());
+		final String type = visualEntry.getType();
 		
 		setValue(VideoMetadataType.VIDEO_FORMAT, new LocalizablePlaceholder(new ValueGenerator() {
 			public Object getValueForLocale(Locale locale) {
@@ -169,12 +165,12 @@ public class IsoboxMetadataResource extends AbstractVideoMetadataResource {
 	
 	private void extractAudioMetadata(MediaHeaderBox header,
 			AudioSampleEntry audioEntry) {
-		final String type = getTypeName(audioEntry.getType());
-		final Double rate;
-		if ( audioEntry.getSampleRate() > 0f ) {
+		final String type = audioEntry.getType();
+		final Long rate;
+		if ( audioEntry.getSampleRate() > 0L ) {
 			rate = audioEntry.getSampleRate();
 		} else if ( header.getTimescale() > 0 ) {
-			rate = (double)header.getTimescale();
+			rate = header.getTimescale();
 		} else {
 			rate = null;
 		}
@@ -228,16 +224,6 @@ public class IsoboxMetadataResource extends AbstractVideoMetadataResource {
 		}));
 	}
 
-	private String getTypeName(byte[] type) {
-		String t;
-		try {
-			t = new String(type, "ISO-8859-1");
-		} catch ( UnsupportedEncodingException e ) {
-			t = new String(type);
-		}
-		return t;
-	}
-	
 	private String getGeneralVideoMessage(String key, Locale locale) {
 		ResourceBundle bundle = ResourceBundle.getBundle(
 				"magoffin/matt/meta/video/general", locale);

@@ -1,0 +1,6 @@
+/build/
+/dist/
+/build.properties
+/version.properties
+/coverage/
+.DS_Store
