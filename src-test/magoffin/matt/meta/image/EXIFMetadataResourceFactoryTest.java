@@ -20,16 +20,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 
  * 02111-1307 USA
  * ===================================================================
- * $Id$
- * ===================================================================
  */
 
 package magoffin.matt.meta.image;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.util.Iterator;
 import java.util.Locale;
 import junit.framework.TestCase;
 import magoffin.matt.meta.MetadataNotSupportedException;
@@ -43,14 +41,13 @@ import com.drew.imaging.jpeg.JpegMetadataReader;
 import com.drew.imaging.jpeg.JpegProcessingException;
 import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
-import com.drew.metadata.MetadataException;
 import com.drew.metadata.Tag;
 
 /**
  * Test case for the {@link EXIFMetadataResourceFactory} class.
  * 
  * @author Matt Magoffin (spamsqr@msqr.us)
- * @version $Revision$ $Date$
+ * @version 1.1
  */
 public class EXIFMetadataResourceFactoryTest extends TestCase {
 
@@ -189,32 +186,28 @@ public class EXIFMetadataResourceFactoryTest extends TestCase {
 	        try {
 	            Metadata metadata = JpegMetadataReader.readMetadata(jpegFile);
 	            printImageTags(metadata);
+			} catch ( IOException e ) {
+				System.err.println("Error reading file: " + e.getMessage());
 	        } catch (JpegProcessingException e) {
 	            System.err.println("error 1a");
 	        }
 
 	    }
 
-		@SuppressWarnings("rawtypes")
 		private void printImageTags(Metadata metadata)
 	    {
-	        Iterator directories = metadata.getDirectoryIterator();
-	        while (directories.hasNext()) {
-	            Directory directory = (Directory)directories.next();
-	            Iterator tags = directory.getTagIterator();
-	            while (tags.hasNext()) {
-	                Tag tag = (Tag)tags.next();
+			for ( Directory directory : metadata.getDirectories() ) {
+				for ( Tag tag : directory.getTags() ) {
 	                try {
 	                	log.info(tag.getDirectoryName() +'/' +tag.getTagTypeHex() +" (" +tag.getTagName() +") "
 	                		+tag.getDescription());
-	                } catch ( MetadataException e ) {
+					} catch ( RuntimeException e ) {
 	                	log.error(e);
 	                }
 	            }
 	            if (directory.hasErrors()) {
-	                Iterator errors = directory.getErrors();
-	                while (errors.hasNext()) {
-	                    log.error(errors.next());
+					for ( String err : directory.getErrors() ) {
+						log.error(err);
 	                }
 	            }
 	        }

@@ -20,8 +20,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 
  * 02111-1307 USA
  * ===================================================================
- * $Id$
- * ===================================================================
  */
 
 package magoffin.matt.meta.image;
@@ -30,18 +28,16 @@ import java.io.File;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.Locale;
-
 import junit.framework.TestCase;
 import magoffin.matt.meta.MetadataNotSupportedException;
 import magoffin.matt.meta.MetadataResource;
-
 import org.apache.log4j.Logger;
 
 /**
  * Test case for the {@link PNGMetadataResourceFactory} class.
  * 
  * @author Matt Magoffin (spamsqr@msqr.us)
- * @version $Revision$ $Date$
+ * @version 1.1
  */
 public class PNGMetadataResourceFactoryTest extends TestCase {
 
@@ -80,9 +76,7 @@ public class PNGMetadataResourceFactoryTest extends TestCase {
 		
 		Iterable<String> keys = mResource.getParsedKeys();
 		assertNotNull(keys);
-		int size = 0;
 		for ( String key : keys ) {
-			size++;
 			log.debug("Key [" +key +"] = " +mResource.getValue(key, Locale.US));
 		}
 	}

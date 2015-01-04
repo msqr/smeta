@@ -37,18 +37,15 @@ import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
-
 import magoffin.matt.meta.MetadataConfigurationException;
 import magoffin.matt.meta.MetadataNotSupportedException;
 import magoffin.matt.meta.MetadataResource;
 import magoffin.matt.meta.MetadataResourceFactory;
-
 import org.apache.log4j.Logger;
-
 import com.drew.imaging.jpeg.JpegMetadataReader;
 import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
-import com.drew.metadata.exif.ExifDirectory;
+import com.drew.metadata.exif.ExifIFD0Directory;
 
 /**
  * {@link MetadataResourceFactory} for EXIF metadata, eg. JPEG images.
@@ -295,7 +292,7 @@ public class EXIFMetadataResourceFactory implements MetadataResourceFactory {
 	 * @return camera make
 	 */
 	protected String extractCameraMakeKey(Metadata exif) {
-		return getExifStringKey(exif, ExifDirectory.TAG_MAKE);
+		return getExifStringKey(exif, ExifIFD0Directory.class, ExifIFD0Directory.TAG_MAKE);
 	}
 	
 	/**
@@ -305,11 +302,11 @@ public class EXIFMetadataResourceFactory implements MetadataResourceFactory {
 	 * @return camera model
 	 */
 	protected String extractCameraModelKey(Metadata exif) {
-		return getExifStringKey(exif, ExifDirectory.TAG_MODEL);
+		return getExifStringKey(exif, ExifIFD0Directory.class, ExifIFD0Directory.TAG_MODEL);
 	}
 
-	private String getExifStringKey(Metadata exif, int tagType) {
-		Directory dir = exif.getDirectory(ExifDirectory.class);
+	private String getExifStringKey(Metadata exif, Class<? extends Directory> dirClass, int tagType) {
+		Directory dir = exif.getDirectory(dirClass);
 		if (dir == null || !dir.containsTag(tagType)) {
 			return null;
 		}

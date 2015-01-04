@@ -1,0 +1,13 @@
+sMeta Release Notes
+
+@VERSION@ @BUILD_DATE@
+
+This is a minor update to the 0.8 release that updates some of the
+dependencies used as well as some of the build infrastructure. There
+are no new features.
+
+- Switch to Git for source control.
+
+- Use Ivy for build dependencies.
+
+- Update to more recent versions of Metadata Extractor and mp4parser.

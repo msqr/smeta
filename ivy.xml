@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ivy-module version="2.0">
+	<info organisation="sMeta" module="sMeta"/>
+	<configurations defaultconf="compile,runtime">
+		<conf name="compile" visibility="public" description="Build dependencies"/>
+		<conf name="runtime" visibility="public" description="sMeta"/>
+		<conf name="test" visibility="private" description="unit testing" extends="compile"/>
+	</configurations>
+	<dependencies defaultconfmapping="runtime->default(runtime);compile->default(compile);test->runtime(default)">
+		
+		<dependency org="log4j" name="log4j" rev="1.2.16" conf="compile,runtime"/>
+		<dependency org="com.drewnoakes" name="metadata-extractor" rev="2.6.2" conf="compile,runtime"/>
+		<dependency org="com.googlecode.mp4parser" name="isoparser" rev="1.0.5.4" conf="compile,runtime"/>
+		
+		<!-- Unit test support -->
+		<dependency org="junit" name="junit" rev="3.8.1" conf="test"/>
+		
+	</dependencies>
+</ivy-module>
