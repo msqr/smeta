@@ -70,7 +70,7 @@
 	<property name="git.tag.path" value="refs/tags/${git.tag}"/>
 	<property name="git.url" value="https://github.com/msqr/smeta.git"/>
 	<property name="git.dir.repo" value="${basedir}/build/repo"/>
-	<property name="git.dir.build" value="${git.dir.repo}/smeta"/>
+	<property name="git.dir.build" value="${git.dir.repo}"/>
 
 	<tstamp>
 		<format property="build.time" pattern="MM/dd/yyyy hh:mm aa z" />
