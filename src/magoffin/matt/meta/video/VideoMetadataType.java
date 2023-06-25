@@ -20,72 +20,74 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 
  * 02111-1307 USA
  * ===================================================================
- * $Id$
- * ===================================================================
  */
 
 package magoffin.matt.meta.video;
 
+import java.util.Date;
 import magoffin.matt.meta.MetadataImage;
-
 
 /**
  * Metadata types for video media.
  * 
  * @author Matt Magoffin (spamsqr@msqr.us)
- * @version $Revision$ $Date$
+ * @version 1.1
  */
 public enum VideoMetadataType {
 
 	/** The audio format, such as codec, frequency, bits, etc. */
 	AUDIO_FORMAT,
-	
+
+	/** The date the photo was taken, as a {@link Date} object. */
+	DATE_TAKEN(Date.class),
+
 	/** The total length of the video, in milliseconds. */
 	DURATION(Long.class),
-	
+
 	/** The total lenght of the video, in HH:MM:SS.F format. */
 	DURATION_TIME,
-	
+
 	/** The frame rate of the video in frames/second. */
 	FPS(Float.class),
-	
+
 	/** The height of the video, in pixels. */
 	HEIGHT(Integer.class),
-	
+
 	/** A poster image from the video, as a {@link MetadataImage}. */
 	POSTER(MetadataImage.class),
-	
+
 	/** The video format, such as codec, quality, etc. */
 	VIDEO_FORMAT,
-	
+
 	/** The width of the video, in pixels. */
 	WIDTH(Integer.class);
 
 	private Class<?> objectType;
-	
+
 	/**
 	 * Default constructor, for String types.
 	 */
 	private VideoMetadataType() {
 		this(String.class);
 	}
-	
+
 	/**
 	 * Construct with a specific type.
 	 * 
-	 * @param objectType the object type
+	 * @param objectType
+	 *        the object type
 	 */
 	private VideoMetadataType(Class<?> objectType) {
 		this.objectType = objectType;
 	}
-	
+
 	/**
 	 * Get the type of object this metadata represents.
+	 * 
 	 * @return object type
 	 */
 	public Class<?> getObjectType() {
 		return this.objectType;
 	}
-	
 
 }
