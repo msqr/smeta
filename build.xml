@@ -70,11 +70,6 @@
 		<pathelement location="${dir.source}"/>
 	</path>
 
-	<path id="emma.lib.path" >
-		<pathelement location="${dir.lib}/emma.jar" />
-		<pathelement location="${dir.lib}/emma_ant.jar" />
-	</path>
-
 	<path id="unit-test.path">
 		<pathelement location="${dir.compile.test}"/>
 		<path refid="lib.path"/>
@@ -87,8 +82,6 @@
 		<exclude name="*-src.jar"/>
 	</fileset>
 
-	<taskdef resource = "emma_ant.properties" classpathref="emma.lib.path"/>
-	
 	<!-- Ivy integration -->
 
 	<target name="ivy-init">
@@ -172,26 +165,17 @@
 		</ant>
 	</target>
 	
-	<target name="emma" description="turns on EMMA's on-the-fly instrumentation mode" >
-		<property name="emma.enabled" value="true" />
-	</target>
-
-	<target name="junit" depends="compile-test" description="Run all JUnit test cases">
-		<emmajava enabled="${emma.enabled}" 
-			libclasspathref="lib.path" 
-			fullmetadata="yes" 
-			filter="${emma.filter}" 
-			sourcepath="${src.dir}" 
-			classname="magoffin.matt.meta.AllTests" 
-			classpathref="unit-test.path"
-			sourcepathref="source.path"
-			failonerror="true">
-			<filter includes="magoffin.matt.meta.*" 
-				excludes="*Test,*Tests,*.Mock*,*Exception,*Example"/>
-			<txt outfile="${dir.coverage}/coverage.txt" />
-			<xml outfile="${dir.coverage}/coverage.xml" />
-			<html outfile="${dir.coverage}/coverage.html" />
-		</emmajava>
+	<target name="junit" depends="compile,compile-test" description="Run all JUnit test cases">
+		<junit printsummary="on" haltonfailure="no" fork="true">
+			<classpath>
+				<path refid="ivy.lib.path"/>
+				<path refid="unit-test.path"/>
+			</classpath>
+			<formatter type="brief" usefile="false" />
+			<batchtest>
+				<fileset dir="${dir.source.test}" includes="**/*Test.java" />
+			</batchtest>
+		</junit>
 	</target>
 
 	<target name="javadoc" depends="init,compile.path"

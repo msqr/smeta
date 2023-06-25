@@ -24,18 +24,21 @@
 
 package magoffin.matt.meta.image;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.Locale;
 import org.apache.log4j.Logger;
+import org.junit.Test;
 import com.drew.imaging.jpeg.JpegMetadataReader;
 import com.drew.imaging.jpeg.JpegProcessingException;
 import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.Tag;
-import junit.framework.TestCase;
 import magoffin.matt.meta.MetadataNotSupportedException;
 import magoffin.matt.meta.MetadataResource;
 import magoffin.matt.meta.image.camera.Canon;
@@ -49,7 +52,7 @@ import magoffin.matt.meta.image.camera.fujifilm.XF1;
  * @author Matt Magoffin (spamsqr@msqr.us)
  * @version 1.1
  */
-public class EXIFMetadataResourceFactoryTest extends TestCase {
+public class EXIFMetadataResourceFactoryTest {
 
 	private final Logger log = Logger.getLogger(getClass());
 
@@ -59,6 +62,7 @@ public class EXIFMetadataResourceFactoryTest extends TestCase {
 	 * @throws Exception
 	 *         if error occurs
 	 */
+	@Test
 	public void testNonEXIFResource() throws Exception {
 		EXIFMetadataResourceFactory factory = new EXIFMetadataResourceFactory();
 		URL u = getClass().getClassLoader().getResource("magoffin/matt/meta/audio/id3v1.mp3");
@@ -79,6 +83,7 @@ public class EXIFMetadataResourceFactoryTest extends TestCase {
 	 * @throws Exception
 	 *         if error occurs
 	 */
+	@Test
 	public void testJpegEXIFCanon() throws Exception {
 		EXIFMetadataResourceFactory factory = new EXIFMetadataResourceFactory();
 		URL u = getClass().getClassLoader().getResource("magoffin/matt/meta/image/IMG_4846.jpg");
@@ -101,6 +106,7 @@ public class EXIFMetadataResourceFactoryTest extends TestCase {
 	 * @throws Exception
 	 *         if error occurs
 	 */
+	@Test
 	public void testJpegEXIFCanonG5() throws Exception {
 		EXIFMetadataResourceFactory factory = new EXIFMetadataResourceFactory();
 		URL u = getClass().getClassLoader().getResource("magoffin/matt/meta/image/IMG_1218.jpg");
@@ -123,6 +129,7 @@ public class EXIFMetadataResourceFactoryTest extends TestCase {
 	 * @throws Exception
 	 *         if error occurs
 	 */
+	@Test
 	public void testJpegEXIFCanon20D() throws Exception {
 		EXIFMetadataResourceFactory factory = new EXIFMetadataResourceFactory();
 		URL u = getClass().getClassLoader().getResource("magoffin/matt/meta/image/IMG_4523.jpg");
@@ -145,6 +152,7 @@ public class EXIFMetadataResourceFactoryTest extends TestCase {
 	 * @throws Exception
 	 *         if error occurs
 	 */
+	@Test
 	public void testJpegEXIFiPhone3G() throws Exception {
 		EXIFMetadataResourceFactory factory = new EXIFMetadataResourceFactory();
 		URL u = getClass().getClassLoader().getResource("magoffin/matt/meta/image/IMG_0027.JPG");
@@ -168,6 +176,7 @@ public class EXIFMetadataResourceFactoryTest extends TestCase {
 	 * @throws Exception
 	 *         if error occurs
 	 */
+	@Test
 	public void testJpegEXIFFujifilmXF1() throws Exception {
 		EXIFMetadataResourceFactory factory = new EXIFMetadataResourceFactory();
 		URL u = getClass().getClassLoader().getResource("magoffin/matt/meta/image/DSCF0209.JPG");
@@ -191,6 +200,7 @@ public class EXIFMetadataResourceFactoryTest extends TestCase {
 	 * @throws Exception
 	 *         if error occurs
 	 */
+	@Test
 	public void testJpegEXIFiPhoneXS() throws Exception {
 		EXIFMetadataResourceFactory factory = new EXIFMetadataResourceFactory();
 		URL u = getClass().getClassLoader().getResource("magoffin/matt/meta/image/IMG_4082.jpeg");

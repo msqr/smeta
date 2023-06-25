@@ -26,9 +26,12 @@
 
 package magoffin.matt.meta;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
 import java.io.File;
-
-import junit.framework.TestCase;
+import org.junit.Test;
 
 /**
  * Test case for the {@link MetadataResourceFactoryManager} class.
@@ -36,48 +39,48 @@ import junit.framework.TestCase;
  * @author Matt Magoffin (spamsqr@msqr.us)
  * @version $Revision$ $Date$
  */
-public class MetadataResourceFactoryManagerTest extends TestCase {
+public class MetadataResourceFactoryManagerTest {
 
 	/**
 	 * Test able to construct class.
 	 */
+	@Test
 	public void testConstruct() {
 		MetadataResourceFactoryManager manager = new MetadataResourceFactoryManager();
 		assertNull(manager.getManagerProperties());
 	}
-	
+
 	/**
 	 * Test able to instantiate factory for a File.
 	 */
+	@Test
 	public void testInstantiateFactoryForFile() {
 		MetadataResourceFactoryManager manager = new MetadataResourceFactoryManager();
 		manager.setManagerProperties("magoffin/matt/meta/smeta.properties");
-		MetadataResourceFactory factory = manager.getMetadataResourceFactory(
-				new File("mock.test"));
+		MetadataResourceFactory factory = manager.getMetadataResourceFactory(new File("mock.test"));
 		assertNotNull(factory);
-		
+
 		// now get again, to test retrieving from cache
-		MetadataResourceFactory factory2 = manager.getMetadataResourceFactory(
-				new File("foo.test"));
+		MetadataResourceFactory factory2 = manager.getMetadataResourceFactory(new File("foo.test"));
 		assertNotNull(factory2);
 		assertSame(factory.getClass(), factory2.getClass());
 
 		// now get again, to test retrieving with different case
-		factory2 = manager.getMetadataResourceFactory(
-				new File("FOO.TEST"));
+		factory2 = manager.getMetadataResourceFactory(new File("FOO.TEST"));
 		assertNotNull(factory2);
 		assertSame(factory.getClass(), factory2.getClass());
 	}
-	
+
 	/**
 	 * Test able to instantiate factory for a MIME type.
 	 */
+	@Test
 	public void testInstantiateFactoryForMIME() {
 		MetadataResourceFactoryManager manager = new MetadataResourceFactoryManager();
 		manager.setManagerProperties("magoffin/matt/meta/smeta.properties");
 		MetadataResourceFactory factory = manager.getMetadataResourceFactory("foo/mime");
 		assertNotNull(factory);
-		
+
 		// now get again, to test retrieving from cache
 		MetadataResourceFactory factory2 = manager.getMetadataResourceFactory("foo/mime");
 		assertNotNull(factory2);
@@ -88,26 +91,27 @@ public class MetadataResourceFactoryManagerTest extends TestCase {
 		assertNotNull(factory2);
 		assertSame(factory.getClass(), factory2.getClass());
 	}
-	
+
 	/**
 	 * Test able to instantiate factory for a MIME type and file.
 	 */
+	@Test
 	public void testInstantiateFactoryForMIMEAndFile() {
 		MetadataResourceFactoryManager manager = new MetadataResourceFactoryManager();
 		manager.setManagerProperties("magoffin/matt/meta/smeta.properties");
 		MetadataResourceFactory factory = manager.getMetadataResourceFactory("foo/mime");
 		assertNotNull(factory);
-		
+
 		// now get again, to test retrieving via file
-		MetadataResourceFactory factory2 = manager.getMetadataResourceFactory(
-				new File("foo.test"));
+		MetadataResourceFactory factory2 = manager.getMetadataResourceFactory(new File("foo.test"));
 		assertNotNull(factory2);
 		assertSame(factory.getClass(), factory2.getClass());
 	}
-	
+
 	/**
 	 * Test exception thrown for missing configuration.
 	 */
+	@Test
 	public void testMissingConfiguration() {
 		MetadataResourceFactoryManager manager = new MetadataResourceFactoryManager();
 		manager.setManagerProperties("does/not/exist/smeta.properties");
@@ -119,22 +123,23 @@ public class MetadataResourceFactoryManagerTest extends TestCase {
 			assertNotNull(e.getMessage());
 		}
 	}
-	
+
 	/**
 	 * Test null factory returned for missing factory configuration.
 	 */
+	@Test
 	public void testMissingFactoryConfiguration() {
 		MetadataResourceFactoryManager manager = new MetadataResourceFactoryManager();
 		manager.setManagerProperties("magoffin/matt/meta/smeta.properties");
 		manager.setDisableSearchPath(true);
-		MetadataResourceFactory factory = manager.getMetadataResourceFactory(
-				new File("mock.foo"));
+		MetadataResourceFactory factory = manager.getMetadataResourceFactory(new File("mock.foo"));
 		assertNull(factory);
 	}
-	
+
 	/**
 	 * Test exception thrown for bad factory configuration.
 	 */
+	@Test
 	public void testBadFactoryConfiguration() {
 		MetadataResourceFactoryManager manager = new MetadataResourceFactoryManager();
 		manager.setManagerProperties("magoffin/matt/meta/smeta.properties");
@@ -146,17 +151,18 @@ public class MetadataResourceFactoryManagerTest extends TestCase {
 			assertNotNull(e.getMessage());
 		}
 	}
-	
+
 	/**
 	 * Test able to construct default manager instance.
 	 */
+	@Test
 	public void testDefaultInstance() {
-		MetadataResourceFactoryManager manager 
-			= MetadataResourceFactoryManager.getDefaultManagerInstance();
+		MetadataResourceFactoryManager manager = MetadataResourceFactoryManager
+				.getDefaultManagerInstance();
 		assertNotNull(manager);
-		MetadataResourceFactoryManager manager2
-			= MetadataResourceFactoryManager.getDefaultManagerInstance();
+		MetadataResourceFactoryManager manager2 = MetadataResourceFactoryManager
+				.getDefaultManagerInstance();
 		assertSame(manager, manager2);
 	}
-	
+
 }

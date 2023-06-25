@@ -26,17 +26,18 @@
 
 package magoffin.matt.meta.video;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.Locale;
-
-import junit.framework.TestCase;
+import org.apache.log4j.Logger;
+import org.junit.Test;
 import magoffin.matt.meta.MetadataResource;
 import magoffin.matt.meta.MetadataResourceFactory;
-
-import org.apache.log4j.Logger;
 
 /**
  * Test case for the {@link MP4MetadataResourceFactory} class.
@@ -44,23 +45,25 @@ import org.apache.log4j.Logger;
  * @author matt
  * @version $Revision$ $Date$
  */
-public class MP4MetadataResourceFactoryTest extends TestCase {
-	
+public class MP4MetadataResourceFactoryTest {
+
 	private final Logger log = Logger.getLogger(getClass());
 
 	/**
 	 * Test able to get IsoboxMetadataResource instance with a poster image.
-	 * @throws Exception if error occurs
+	 * 
+	 * @throws Exception
+	 *         if error occurs
 	 */
+	@Test
 	public void testVideoWithPoster() throws Exception {
 		MP4MetadataResourceFactory factory = new MP4MetadataResourceFactory();
-		URL u = getClass().getClassLoader().getResource(
-				"magoffin/matt/meta/video/IMG_0670.M4V");
+		URL u = getClass().getClassLoader().getResource("magoffin/matt/meta/video/IMG_0670.M4V");
 		File file = new File(URLDecoder.decode(u.getFile(), "UTF-8"));
 		MetadataResource mResource = handleFile(factory, file);
 		assertEquals(IsoboxMetadataResource.class, mResource.getClass());
-		
-		/*VideoMetadataResource aResource = (VideoMetadataResource)mResource;
+
+		/*-VideoMetadataResource aResource = (VideoMetadataResource)mResource;
 		
 		// verify got image
 		Object o = aResource.getValue(VideoMetadataType.POSTER, Locale.US);
@@ -86,22 +89,20 @@ public class MP4MetadataResourceFactoryTest extends TestCase {
 		*/
 	}
 
-	private MetadataResource handleFile(MetadataResourceFactory factory, File file) 
-	throws IOException {
+	private MetadataResource handleFile(MetadataResourceFactory factory, File file) throws IOException {
 		MetadataResource mResource = factory.getMetadataResourceInstance(file);
 		assertNotNull(mResource);
-		log.debug("Got MetadataResource implementation: " +mResource.getClass().getName());
-		
+		log.debug("Got MetadataResource implementation: " + mResource.getClass().getName());
+
 		Iterable<String> keys = mResource.getParsedKeys();
 		assertNotNull(keys);
 		int size = 0;
 		for ( String key : keys ) {
 			size++;
-			log.debug("Key [" +key +"] = " +mResource.getValue(key, Locale.US));
+			log.debug("Key [" + key + "] = " + mResource.getValue(key, Locale.US));
 		}
 		assertTrue("Should have read some tags", size > 0);
 		return mResource;
 	}
-	
 
 }

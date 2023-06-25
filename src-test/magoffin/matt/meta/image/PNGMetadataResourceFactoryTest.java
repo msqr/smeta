@@ -24,14 +24,17 @@
 
 package magoffin.matt.meta.image;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
 import java.io.File;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.Locale;
-import junit.framework.TestCase;
+import org.apache.log4j.Logger;
+import org.junit.Test;
 import magoffin.matt.meta.MetadataNotSupportedException;
 import magoffin.matt.meta.MetadataResource;
-import org.apache.log4j.Logger;
 
 /**
  * Test case for the {@link PNGMetadataResourceFactory} class.
@@ -39,47 +42,53 @@ import org.apache.log4j.Logger;
  * @author Matt Magoffin (spamsqr@msqr.us)
  * @version 1.1
  */
-public class PNGMetadataResourceFactoryTest extends TestCase {
+public class PNGMetadataResourceFactoryTest {
 
 	private final Logger log = Logger.getLogger(getClass());
 
 	/**
 	 * Test non-PNG file.
-	 * @throws Exception if error occurs
+	 * 
+	 * @throws Exception
+	 *         if error occurs
 	 */
+	@Test
 	public void testNonPNGResource() throws Exception {
 		PNGMetadataResourceFactory factory = new PNGMetadataResourceFactory();
 		URL u = getClass().getClassLoader().getResource("magoffin/matt/meta/audio/id3v1.mp3");
 		File file = new File(URLDecoder.decode(u.getFile(), "UTF-8"));
 		try {
 			factory.getMetadataResourceInstance(file);
-			fail("Should have thrown " +MetadataNotSupportedException.class.getName());
+			fail("Should have thrown " + MetadataNotSupportedException.class.getName());
 		} catch ( MetadataNotSupportedException e ) {
-			log.debug("Got expected MetadataNotSupportedException: " +e);
+			log.debug("Got expected MetadataNotSupportedException: " + e);
 			assertNotNull(e.getMetadataFile());
 			assertNotNull(e.getFactory());
 		}
 	}
-	
+
 	/**
 	 * Test able to get PNG resource.
-	 * @throws Exception if error occurs
+	 * 
+	 * @throws Exception
+	 *         if error occurs
 	 */
+	@Test
 	public void testPng() throws Exception {
 		PNGMetadataResourceFactory factory = new PNGMetadataResourceFactory();
-		URL u = getClass().getClassLoader().getResource("magoffin/matt/meta/image/ostrander-3d-route.png");
+		URL u = getClass().getClassLoader()
+				.getResource("magoffin/matt/meta/image/ostrander-3d-route.png");
 		File file = new File(URLDecoder.decode(u.getFile(), "UTF-8"));
 		MetadataResource mResource = factory.getMetadataResourceInstance(file);
 		assertNotNull(mResource);
-		log.debug("Got MetadataResource implementation: " +mResource.getClass().getName());
+		log.debug("Got MetadataResource implementation: " + mResource.getClass().getName());
 		assertSame(PNGMetadataResource.class, mResource.getClass());
-		
+
 		Iterable<String> keys = mResource.getParsedKeys();
 		assertNotNull(keys);
 		for ( String key : keys ) {
-			log.debug("Key [" +key +"] = " +mResource.getValue(key, Locale.US));
+			log.debug("Key [" + key + "] = " + mResource.getValue(key, Locale.US));
 		}
 	}
-
 
 }
