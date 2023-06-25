@@ -20,8 +20,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 
  * 02111-1307 USA
  * ===================================================================
- * $Id$
- * ===================================================================
  */
 
 package magoffin.matt.meta.video;
@@ -32,40 +30,20 @@ import magoffin.matt.meta.support.AbstractEnumMetadataResource;
  * Abstract implementation of {@link VideoMetadataResource}.
  * 
  * @author Matt Magoffin (spamsqr@msqr.us)
- * @version $Revision$ $Date$
+ * @version 1.1
  */
-public abstract class AbstractVideoMetadataResource 
-extends AbstractEnumMetadataResource<VideoMetadataType>
-implements VideoMetadataResource {
+public abstract class AbstractVideoMetadataResource
+		extends AbstractEnumMetadataResource<VideoMetadataType> implements VideoMetadataResource {
 
 	/**
 	 * Get a time duration value from a duration value.
 	 * 
-	 * @param ms the duration, in milliseconds
+	 * @param ms
+	 *        the duration, in milliseconds
 	 * @return the duration, as a hh:mm:ss.SSS string
 	 */
 	protected String getDurationTime(long ms) {
-		StringBuilder buf = new StringBuilder();
-		int hours = (int)Math.floor(ms / 3600000d );
-		int mins = (int)Math.floor((ms / 60000d) - (hours*60));
-		int secs = (int)Math.floor((ms / 1000) - (hours*60*60) - (mins*60));
-		int frac = (int)(ms - (hours*60*60*1000) - (mins*60*1000) - (secs*1000));
-		if ( hours > 0 ) {
-			buf.append(hours).append(":");
-		}
-		if ( mins < 10 && hours > 0 ) {
-			buf.append("0");
-		}
-		buf.append(mins);
-		buf.append(":");
-		if ( secs < 10 ) {
-			buf.append("0");
-		}
-		buf.append(secs);
-		if ( frac > 0 ) {
-			buf.append(".").append(frac);
-		}
-		return buf.toString();
+		return VideoUtils.durationTime(ms);
 	}
 
 }

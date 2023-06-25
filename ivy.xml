@@ -9,8 +9,8 @@
 	<dependencies defaultconfmapping="runtime->default(runtime);compile->default(compile);test->runtime(default)">
 		
 		<dependency org="log4j" name="log4j" rev="1.2.16" conf="compile,runtime"/>
-		<dependency org="com.drewnoakes" name="metadata-extractor" rev="2.6.2" conf="compile,runtime"/>
-		<dependency org="com.googlecode.mp4parser" name="isoparser" rev="1.0.5.4" conf="compile,runtime"/>
+		<dependency org="com.drewnoakes" name="metadata-extractor" rev="2.18.0" conf="compile,runtime"/>
+		<dependency org="com.googlecode.mp4parser" name="isoparser" rev="1.1.22" conf="compile,runtime"/>
 		
 		<!-- Unit test support -->
 		<dependency org="junit" name="junit" rev="3.8.1" conf="test"/>

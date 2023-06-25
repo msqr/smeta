@@ -26,9 +26,9 @@
 
 package magoffin.matt.meta.image;
 
+import static org.junit.Assert.assertEquals;
 import java.util.Date;
-
-import junit.framework.TestCase;
+import org.junit.Test;
 
 /**
  * Test case for the {@link ImageMetadataType} class.
@@ -36,13 +36,14 @@ import junit.framework.TestCase;
  * @author Matt Magoffin (spamsqr@msqr.us)
  * @version $Revision$ $Date$
  */
-public class ImageMetadataTypeTest extends TestCase {
+public class ImageMetadataTypeTest {
 
 	/**
 	 * Test date object type.
 	 */
+	@Test
 	public void testDateObjectType() {
 		assertEquals(Date.class, ImageMetadataType.DATE_TAKEN.getObjectType());
 	}
-	
+
 }

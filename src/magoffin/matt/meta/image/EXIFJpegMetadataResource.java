@@ -20,20 +20,17 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 
  * 02111-1307 USA
  * ===================================================================
- * $Id$
- * ===================================================================
  */
 
 package magoffin.matt.meta.image;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
-import magoffin.matt.meta.MetadataResource;
-import magoffin.matt.meta.support.AbstractEnumMetadataResource;
 import com.drew.imaging.jpeg.JpegMetadataReader;
 import com.drew.imaging.jpeg.JpegProcessingException;
 import com.drew.lang.Rational;
@@ -43,84 +40,97 @@ import com.drew.metadata.MetadataException;
 import com.drew.metadata.exif.ExifIFD0Directory;
 import com.drew.metadata.exif.ExifSubIFDDirectory;
 import com.drew.metadata.exif.GpsDirectory;
+import magoffin.matt.meta.MetadataResource;
+import magoffin.matt.meta.support.AbstractEnumMetadataResource;
 
 /**
  * {@link MetadataResource} implementation for JPEG+EXIF resources.
  * 
- * <p>This implementation relies on Metadata Extractor, available from
- * http://drewnoakes.com/code/exif/</p>
+ * <p>
+ * This implementation relies on Metadata Extractor, available from
+ * http://drewnoakes.com/code/exif/
+ * </p>
  * 
  * @author Matt Magoffin (spamsqr@msqr.us)
- * @version $Revision$ $Date$
+ * @version 1.1
  */
-public class EXIFJpegMetadataResource 
-extends AbstractEnumMetadataResource<ImageMetadataType>
-implements MetadataResource {
-	
+public class EXIFJpegMetadataResource extends AbstractEnumMetadataResource<ImageMetadataType>
+		implements MetadataResource {
+
 	/** A date format in the form <code>yyyy:MM:dd hh:mm:ss</code>. */
 	public static final String EXIF_BASIC_DATE_FORMAT = "yyyy:MM:dd HH:mm:ss";
-	
+
 	private Metadata exif;
-	
+
 	/**
 	 * Construct from an InputStream.
-	 * @param in the JPEG input stream
+	 * 
+	 * @param in
+	 *        the JPEG input stream
 	 */
 	public EXIFJpegMetadataResource(InputStream in) {
 		try {
 			exif = JpegMetadataReader.readMetadata(in);
+		} catch ( IOException e ) {
+			throw new RuntimeException(e);
 		} catch ( JpegProcessingException e ) {
 			throw new RuntimeException(e);
 		}
 		parseExif();
 	}
-	
+
 	/**
 	 * Construct from an existing EXIF {@link Metadata} instance.
-	 * @param exif the EXIF metadata
+	 * 
+	 * @param exif
+	 *        the EXIF metadata
 	 */
 	public EXIFJpegMetadataResource(Metadata exif) {
 		this.exif = exif;
 		parseExif();
 	}
-	
+
 	/**
-	 * Parse supported EXIF data from the {@link Metadata} instance
-	 * associated with this object.
+	 * Parse supported EXIF data from the {@link Metadata} instance associated
+	 * with this object.
 	 * 
-	 * <p>Extending classes might want to override this behavior.</p>
+	 * <p>
+	 * Extending classes might want to override this behavior.
+	 * </p>
 	 */
 	protected void parseExif() {
-		setValue(ImageMetadataType.APERTURE,extractAperture());
-		setValue(ImageMetadataType.CAMERA_MAKE,extractCameraMake());
-		setValue(ImageMetadataType.CAMERA_MODEL,extractCameraModel());
+		setValue(ImageMetadataType.APERTURE, extractAperture());
+		setValue(ImageMetadataType.CAMERA_MAKE, extractCameraMake());
+		setValue(ImageMetadataType.CAMERA_MODEL, extractCameraModel());
 		setValue(ImageMetadataType.DATE_TAKEN, extractCreationDate());
-		setValue(ImageMetadataType.EXPOSURE_BIAS,extractExposureBias());
-		setValue(ImageMetadataType.EXPOSURE_TIME,extractExposureTime());
-		setValue(ImageMetadataType.F_STOP,extractFstop());
-		setValue(ImageMetadataType.FLASH,extractFlash());
-		setValue(ImageMetadataType.FOCAL_LENGTH,extractFocalLength());
-		setValue(ImageMetadataType.FOCAL_LENGTH_35MM_EQUIV,extractFocalLength35mmEquiv());
-		setValue(ImageMetadataType.ORIENTATION,extractOrientation());
-		setValue(ImageMetadataType.SHUTTER_SPEED,extractShutterSpeed());
-		setValue(ImageMetadataType.GPS_LATITUDE,extractGpsLatitude());
-		setValue(ImageMetadataType.GPS_LONGITUDE,extractGpsLongitude());
+		setValue(ImageMetadataType.EXPOSURE_BIAS, extractExposureBias());
+		setValue(ImageMetadataType.EXPOSURE_TIME, extractExposureTime());
+		setValue(ImageMetadataType.F_STOP, extractFstop());
+		setValue(ImageMetadataType.FLASH, extractFlash());
+		setValue(ImageMetadataType.FOCAL_LENGTH, extractFocalLength());
+		setValue(ImageMetadataType.FOCAL_LENGTH_35MM_EQUIV, extractFocalLength35mmEquiv());
+		setValue(ImageMetadataType.ORIENTATION, extractOrientation());
+		setValue(ImageMetadataType.SHUTTER_SPEED, extractShutterSpeed());
+		setValue(ImageMetadataType.GPS_LATITUDE, extractGpsLatitude());
+		setValue(ImageMetadataType.GPS_LONGITUDE, extractGpsLongitude());
 	}
-	
+
 	/**
 	 * Extract the aperture (APEX value).
+	 * 
 	 * @return aperture
 	 */
 	protected String extractAperture() {
 		Rational aperture = getMetaRational(ExifSubIFDDirectory.class, ExifSubIFDDirectory.TAG_APERTURE);
-		if (aperture != null) {
+		if ( aperture != null ) {
 			return String.valueOf(aperture.floatValue());
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Extract the aperture as an F-Stop value.
+	 * 
 	 * @return f-stop
 	 */
 	protected String extractFstop() {
@@ -128,34 +138,37 @@ implements MetadataResource {
 		if ( aperture == null || aperture.floatValue() < 1 ) {
 			return null;
 		}
-		return "F" +roundDecimal(Math.pow(1.4142,aperture.floatValue()),1);
+		return "F" + roundDecimal(Math.pow(1.4142, aperture.floatValue()), 1);
 
 	}
 
 	/**
 	 * Extract the camera make.
+	 * 
 	 * @return camera make
 	 */
 	protected String extractCameraMake() {
 		return getMetaString(ExifIFD0Directory.class, ExifIFD0Directory.TAG_MAKE);
 	}
-	
+
 	/**
 	 * Extract the cameral model.
+	 * 
 	 * @return camera model
 	 */
 	protected String extractCameraModel() {
 		return getMetaString(ExifIFD0Directory.class, ExifIFD0Directory.TAG_MODEL);
 	}
-	
+
 	/**
 	 * Extract the exposure bias, as an integer string.
+	 * 
 	 * @return the exposure bias
 	 */
 	protected String extractExposureBias() {
 		Rational exposureBias = getMetaRational(ExifSubIFDDirectory.class,
 				ExifSubIFDDirectory.TAG_EXPOSURE_BIAS);
-		if (exposureBias != null) {
+		if ( exposureBias != null ) {
 			return String.valueOf(exposureBias.intValue());
 		}
 		return null;
@@ -163,6 +176,7 @@ implements MetadataResource {
 
 	/**
 	 * Extract boolean FALSE if flash did not fire, TRUE otherwise.
+	 * 
 	 * @return boolean string
 	 */
 	protected String extractFlash() {
@@ -172,22 +186,24 @@ implements MetadataResource {
 		}
 		return Boolean.TRUE.toString();
 	}
-	
+
 	/**
 	 * Extract the focal length.
+	 * 
 	 * @return focal length
 	 */
 	protected String extractFocalLength() {
 		Rational focalLength = getMetaRational(ExifSubIFDDirectory.class,
 				ExifSubIFDDirectory.TAG_FOCAL_LENGTH);
-		if (focalLength != null) {
+		if ( focalLength != null ) {
 			return String.valueOf(focalLength.floatValue());
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Extract the focal length in terms of 35mm film.
+	 * 
 	 * @return focal length
 	 */
 	protected String extractFocalLength35mmEquiv() {
@@ -196,7 +212,7 @@ implements MetadataResource {
 					ExifSubIFDDirectory.TAG_FOCAL_LENGTH);
 			if ( focalLength != null ) {
 				float fl = focalLength.floatValue();
-				int equiv = Math.round(fl*getFocalLength35mmEquivFactor());
+				int equiv = Math.round(fl * getFocalLength35mmEquivFactor());
 				return String.valueOf(equiv);
 			}
 		}
@@ -207,9 +223,10 @@ implements MetadataResource {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Extract the orientation (as an integer string).
+	 * 
 	 * @return orientation
 	 */
 	protected String extractOrientation() {
@@ -219,62 +236,66 @@ implements MetadataResource {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Extract a creation date from the EXIF.
 	 * 
-	 * <p>This method attempts to find the creation date for the image
-	 * by taking the first value available from:</p>
+	 * <p>
+	 * This method attempts to find the creation date for the image by taking
+	 * the first value available from:
+	 * </p>
 	 * 
 	 * <ol>
-	 *   <li>ExifDirectory.TAG_DATETIME_ORIGINAL</li>
-	 *   <li>ExifDirectory.TAG_DATETIME_DIGITIZED</li>
-	 *   <li>ExifDirectory.TAG_DATETIME</li>
+	 * <li>ExifDirectory.TAG_DATETIME_ORIGINAL</li>
+	 * <li>ExifDirectory.TAG_DATETIME_DIGITIZED</li>
+	 * <li>ExifDirectory.TAG_DATETIME</li>
 	 * </ol>
 	 * 
-	 * <p>If a date is found, it is parsed using the date format
-	 * {@link #EXIF_BASIC_DATE_FORMAT}. If a parse 
-	 * exception occurs, or no date is found, <em>null</em> is returned.</p>
+	 * <p>
+	 * If a date is found, it is parsed using the date format
+	 * {@link #EXIF_BASIC_DATE_FORMAT}. If a parse exception occurs, or no date
+	 * is found, <em>null</em> is returned.
+	 * </p>
 	 * 
 	 * @return a Date
 	 */
 	protected Date extractCreationDate() {
 		String dStr = this.getMetaString(ExifSubIFDDirectory.class,
 				ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL);
-		if (dStr == null) {
+		if ( dStr == null ) {
 			// try digi date
 			dStr = this.getMetaString(ExifSubIFDDirectory.class,
 					ExifSubIFDDirectory.TAG_DATETIME_DIGITIZED);
 		}
-		if (dStr == null) {
+		if ( dStr == null ) {
 			// try mod date/time as last resort
 			dStr = this.getMetaString(ExifIFD0Directory.class, ExifIFD0Directory.TAG_DATETIME);
 		}
-		if (dStr == null) {
+		if ( dStr == null ) {
 			return null;
 		}
 		try {
 			return new SimpleDateFormat(EXIF_BASIC_DATE_FORMAT).parse(dStr);
-		} catch (ParseException e) {
-			log.warn("Could not parse date from '" + dStr + "': "
-					+ e.getMessage());
+		} catch ( ParseException e ) {
+			log.warn("Could not parse date from '" + dStr + "': " + e.getMessage());
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Extract the exposure time as a String value.
 	 * 
-	 * <p>This method attempts to format the exposure Rational in a 
-	 * sensible way.</p>
+	 * <p>
+	 * This method attempts to format the exposure Rational in a sensible way.
+	 * </p>
 	 * 
 	 * @return the exposure string
 	 */
 	protected String extractExposureTime() {
 		Rational exposure = getMetaRational(ExifSubIFDDirectory.class,
 				ExifSubIFDDirectory.TAG_EXPOSURE_TIME);
-		if (exposure != null) {
-			if (exposure.getNumerator() > exposure.getDenominator()) {
+		if ( exposure != null ) {
+			if ( exposure.getNumerator() > exposure.getDenominator() ) {
 				// longer than 1 second, so perform division
 				double speed = exposure.doubleValue();
 				return roundDecimal(speed, 1);
@@ -284,24 +305,26 @@ implements MetadataResource {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Extract the shutter speed as a String value.
 	 * 
-	 * <p>This method attempts to format the shutter speed Rational in a 
-	 * sensible way.</p>
+	 * <p>
+	 * This method attempts to format the shutter speed Rational in a sensible
+	 * way.
+	 * </p>
 	 * 
 	 * @return the shutter speed string
 	 */
 	protected String extractShutterSpeed() {
 		Rational shutter = getMetaRational(ExifSubIFDDirectory.class,
 				ExifSubIFDDirectory.TAG_SHUTTER_SPEED);
-		if (shutter != null) {
-			if (shutter.getNumerator() < shutter.getDenominator()) {
+		if ( shutter != null ) {
+			if ( shutter.getNumerator() < shutter.getDenominator() ) {
 				// longer than 1 second, so perform division to get simple
 				// result
 				double speed = 1.0 / Math.pow(2.0, shutter.doubleValue());
-				return roundDecimal(speed,1);
+				return roundDecimal(speed, 1);
 			}
 			// less than 1 second, so leave as fraction
 			long fracSpeed = Math.round(Math.pow(2.0, shutter.doubleValue()));
@@ -309,44 +332,46 @@ implements MetadataResource {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Extract the GPS longitude as a String value.
 	 * 
-	 * <p>This method combines the longitude reference with the longitude value.</p>
+	 * <p>
+	 * This method combines the longitude reference with the longitude value.
+	 * </p>
 	 * 
 	 * @return the GPS longitude string
 	 */
 	protected String extractGpsLongitude() {
-		Directory dir = this.exif.getDirectory(GpsDirectory.class);
-		if ( dir == null || !dir.containsTag(GpsDirectory.TAG_GPS_LONGITUDE)
-			|| !dir.containsTag(GpsDirectory.TAG_GPS_LONGITUDE_REF) ) {
+		Directory dir = this.exif.getFirstDirectoryOfType(GpsDirectory.class);
+		if ( dir == null || !dir.containsTag(GpsDirectory.TAG_LONGITUDE)
+				|| !dir.containsTag(GpsDirectory.TAG_LONGITUDE_REF) ) {
 			return null;
 		}
-		return getGpsString(dir, GpsDirectory.TAG_GPS_LONGITUDE_REF, 
-				GpsDirectory.TAG_GPS_LONGITUDE);
+		return getGpsString(dir, GpsDirectory.TAG_LONGITUDE_REF, GpsDirectory.TAG_LONGITUDE);
 	}
-	
+
 	/**
 	 * Extract the GPS latitude as a String value.
 	 * 
-	 * <p>This method combines the latitude reference with the latitude value.</p>
+	 * <p>
+	 * This method combines the latitude reference with the latitude value.
+	 * </p>
 	 * 
 	 * @return the GPS latitude string
 	 */
 	protected String extractGpsLatitude() {
-		Directory dir = this.exif.getDirectory(GpsDirectory.class);
-		if ( dir == null || !dir.containsTag(GpsDirectory.TAG_GPS_LATITUDE)
-			|| !dir.containsTag(GpsDirectory.TAG_GPS_LATITUDE_REF) ) {
+		Directory dir = this.exif.getFirstDirectoryOfType(GpsDirectory.class);
+		if ( dir == null || !dir.containsTag(GpsDirectory.TAG_LATITUDE)
+				|| !dir.containsTag(GpsDirectory.TAG_LATITUDE_REF) ) {
 			return null;
 		}
-		return getGpsString(dir, GpsDirectory.TAG_GPS_LATITUDE_REF, 
-				GpsDirectory.TAG_GPS_LATITUDE);
+		return getGpsString(dir, GpsDirectory.TAG_LATITUDE_REF, GpsDirectory.TAG_LATITUDE);
 	}
 
 	private String getGpsString(Directory dir, int refTag, int valTag) {
 		String result = null;
-		
+
 		// 1st try: 3 rationals
 		try {
 			Rational[] data = dir.getRationalArray(valTag);
@@ -358,39 +383,38 @@ implements MetadataResource {
 				min = Math.floor(min);
 				sec += minFrac * 60;
 			}
-			
-			result = dir.getString(refTag)
-				+" " +roundDecimal(deg, 0) +"\u00B0" +(int)min +"'" 
-				+roundDecimal(sec, 1) +"\"";
+
+			result = dir.getString(refTag) + " " + roundDecimal(deg, 0) + "\u00B0" + (int) min + "'"
+					+ roundDecimal(sec, 1) + "\"";
 			if ( log.isDebugEnabled() ) {
-				log.debug("GPS rational: " +Arrays.toString(data) +"(string = " 
-					+dir.getString(valTag) +"): " +result);
+				log.debug("GPS rational: " + Arrays.toString(data) + "(string = " + dir.getString(valTag)
+						+ "): " + result);
 			}
 		} catch ( RuntimeException e ) {
 			if ( log.isDebugEnabled() ) {
-				log.debug("Metadata exception getting Exif GPS rationals: " 
-					+ e.getMessage());
+				log.debug("Metadata exception getting Exif GPS rationals: " + e.getMessage());
 			}
 			// fall back to descriptions
 			try {
 				String ref = dir.getDescription(refTag);
 				String val = dir.getDescription(valTag);
 				if ( ref != null && val != null ) {
-					result = ref +' ' +val;
+					result = ref + ' ' + val;
 				}
 			} catch ( RuntimeException e2 ) {
-				log.warn("Metadata exception getting Exif GPS value: " 
-						+ e.getMessage());
+				log.warn("Metadata exception getting Exif GPS value: " + e.getMessage());
 			}
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Round a decimal to a number of places.
 	 * 
-	 * @param decimal the number to round
-	 * @param precision the maximum number of fraction digits
+	 * @param decimal
+	 *        the number to round
+	 * @param precision
+	 *        the maximum number of fraction digits
 	 * @return the rounded number, or <kbd>decimal</kbd> if an error occurs
 	 */
 	protected String roundDecimal(double decimal, int precision) {
@@ -399,7 +423,7 @@ implements MetadataResource {
 		try {
 			return format.format(decimal);
 		} catch ( Exception e ) {
-			log.warn("Unable to round decimal " +decimal +": " +e.toString());
+			log.warn("Unable to round decimal " + decimal + ": " + e.toString());
 			return String.valueOf(decimal);
 		}
 	}
@@ -407,21 +431,22 @@ implements MetadataResource {
 	/**
 	 * Get an EXIF integer value from an arbitrary EXIF directory.
 	 * 
-	 * @param dirClass the class of the directory to extract from
-	 * @param tagType the EXIF tag to get an integer value for
+	 * @param dirClass
+	 *        the class of the directory to extract from
+	 * @param tagType
+	 *        the EXIF tag to get an integer value for
 	 * @return the integer value, or <code>-1</code> if not found
 	 */
 	protected int getMetaInt(Class<? extends Directory> dirClass, int tagType) {
-		Directory dir = this.exif.getDirectory(dirClass);
-		if (dir == null || !dir.containsTag(tagType)) {
+		Directory dir = this.exif.getFirstDirectoryOfType(dirClass);
+		if ( dir == null || !dir.containsTag(tagType) ) {
 			return -1;
 		}
 		try {
 			return dir.getInt(tagType);
-		} catch (MetadataException e) {
-			log.warn("Metadata exception getting Exif int type " + tagType
-					+" from Directory type " +dirClass.getName()
-					+ ": " + e.getMessage());
+		} catch ( MetadataException e ) {
+			log.warn("Metadata exception getting Exif int type " + tagType + " from Directory type "
+					+ dirClass.getName() + ": " + e.getMessage());
 		}
 		return -1;
 	}
@@ -429,21 +454,23 @@ implements MetadataResource {
 	/**
 	 * Get a EXIF Rational value from an arbitrary EXIF directory.
 	 * 
-	 * @param dirClass the class of the directory to extract from
-	 * @param tagType the EXIF tag to get a Rational value for
-	 * @return the Rational, or <em>null</em> if not found or an exception occurs
+	 * @param dirClass
+	 *        the class of the directory to extract from
+	 * @param tagType
+	 *        the EXIF tag to get a Rational value for
+	 * @return the Rational, or <em>null</em> if not found or an exception
+	 *         occurs
 	 */
 	protected Rational getMetaRational(Class<? extends Directory> dirClass, int tagType) {
-		Directory dir = this.exif.getDirectory(dirClass);
-		if (dir == null || !dir.containsTag(tagType)) {
+		Directory dir = this.exif.getFirstDirectoryOfType(dirClass);
+		if ( dir == null || !dir.containsTag(tagType) ) {
 			return null;
 		}
 		try {
 			return dir.getRational(tagType);
 		} catch ( RuntimeException e ) {
-			log.warn("Metadata exception getting Exif rational type " +tagType
-					+" from Directory type " +dirClass.getName()
-					+ ": " + e.getMessage());
+			log.warn("Metadata exception getting Exif rational type " + tagType + " from Directory type "
+					+ dirClass.getName() + ": " + e.getMessage());
 		}
 		return null;
 	}
@@ -451,30 +478,34 @@ implements MetadataResource {
 	/**
 	 * Get a metadata String value from an arbitrary EXIF directory.
 	 * 
-	 * @param dirClass the class of the directory to extract from
-	 * @param tagType the EXIF tag to get a String value for
+	 * @param dirClass
+	 *        the class of the directory to extract from
+	 * @param tagType
+	 *        the EXIF tag to get a String value for
 	 * @return the String, or <em>null</em> if not found
 	 */
 	protected String getMetaString(Class<? extends Directory> dirClass, int tagType) {
-		Directory dir = this.exif.getDirectory(dirClass);
-		if (dir == null || !dir.containsTag(tagType)) {
+		Directory dir = this.exif.getFirstDirectoryOfType(dirClass);
+		if ( dir == null || !dir.containsTag(tagType) ) {
 			return null;
 		}
 		return dir.getString(tagType);
 	}
-	
+
 	/**
-	 * Get a multiplication factor to convert the EXIF focal length into
-	 * a 35mm equivalent length, for cameras that work this way.
+	 * Get a multiplication factor to convert the EXIF focal length into a 35mm
+	 * equivalent length, for cameras that work this way.
 	 * 
-	 * <p>This implementation returns <code>1</code>, i.e. no multiplication 
+	 * <p>
+	 * This implementation returns <code>1</code>, i.e. no multiplication
 	 * factor. Extending classes can override this to provide a camera-specific
-	 * value.</p>
+	 * value.
+	 * </p>
 	 * 
 	 * @return the focalLength35mmEquivFactor
 	 */
 	protected float getFocalLength35mmEquivFactor() {
 		return 1.0f;
 	}
-	
+
 }

@@ -26,12 +26,16 @@
 
 package magoffin.matt.meta.support;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
-import junit.framework.TestCase;
+import org.junit.Test;
 
 /**
  * Unit test for the {@link AbstractEnumMetadataResource} class.
@@ -39,67 +43,72 @@ import junit.framework.TestCase;
  * @author Matt Magoffin (spamsqr@msqr.us)
  * @version $Revision$ $Date$
  */
-public class AbstractEnumMetadataResourceTest extends TestCase {
+public class AbstractEnumMetadataResourceTest {
 
 	/**
 	 * Test attempting to get a non-existing value.
 	 */
+	@Test
 	public void testNonExistingValue() {
 		MockEnumMetadataResource mResource = new MockEnumMetadataResource();
-		
+
 		Object o = mResource.getValue(MockMetadataType.KEY1, Locale.US);
 		assertNull(o);
-		
+
 		mResource.addValue(MockMetadataType.KEY1, "value");
 
-		 o = mResource.getValue("not", Locale.US);
+		o = mResource.getValue("not", Locale.US);
 		assertNull(o);
 	}
-	
+
 	/**
 	 * Test attempting to get a non-existing value.
 	 */
+	@Test
 	public void testNonExistingValues() {
 		MockEnumMetadataResource mResource = new MockEnumMetadataResource();
-		
+
 		Iterable<?> list = mResource.getValues(MockMetadataType.KEY1, Locale.US);
 		assertNotNull(list);
 		assertFalse(list.iterator().hasNext());
 	}
-	
+
 	/**
 	 * Test setting a single value.
 	 */
+	@Test
 	public void testSetValue() {
 		MockEnumMetadataResource mResource = new MockEnumMetadataResource();
 		mResource.setValue(MockMetadataType.KEY1, "value");
-		
+
 		Object o = mResource.getValue(MockMetadataType.KEY1, Locale.US);
 		assertNotNull(o);
 		assertEquals("value", o);
 	}
-	
+
 	/**
 	 * Test replacing a single value.
 	 */
+	@Test
 	public void testReplaceValue() {
 		MockEnumMetadataResource mResource = new MockEnumMetadataResource();
 		mResource.setValue(MockMetadataType.KEY1, "value");
 		mResource.setValue(MockMetadataType.KEY1, "value2");
-		
+
 		Object o = mResource.getValue(MockMetadataType.KEY1, Locale.US);
 		assertNotNull(o);
 		assertEquals("value2", o);
 	}
-	
+
 	/**
 	 * Test setting a list of values.
 	 */
+	@Test
 	public void testSetValues() {
 		MockEnumMetadataResource mResource = new MockEnumMetadataResource();
-		Object[] in = new Object[]{"value1","value2","value3"};
+		Object[] in = new Object[] { "value1", "value2", "value3" };
 		mResource.setValues(MockMetadataType.KEY1, Arrays.asList(in));
-		
+
 		Iterable<?> list = mResource.getValues(MockMetadataType.KEY1, Locale.US);
 		assertNotNull(list);
 		int idx = 0;
@@ -107,17 +116,18 @@ public class AbstractEnumMetadataResourceTest extends TestCase {
 			assertEquals(in[idx++], o);
 		}
 	}
-	
+
 	/**
 	 * Test replacing a list of values.
 	 */
+	@Test
 	public void testReplaceValues() {
 		MockEnumMetadataResource mResource = new MockEnumMetadataResource();
-		Object[] in = new Object[]{"value1","value2","value3"};
+		Object[] in = new Object[] { "value1", "value2", "value3" };
 		mResource.setValues(MockMetadataType.KEY1, Arrays.asList(in));
-		in = new Object[]{"value4",new Integer(5),"value6"};
+		in = new Object[] { "value4", new Integer(5), "value6" };
 		mResource.setValues(MockMetadataType.KEY1, Arrays.asList(in));
-		
+
 		Iterable<?> list = mResource.getValues(MockMetadataType.KEY1, Locale.US);
 		assertNotNull(list);
 		int idx = 0;
@@ -125,25 +135,27 @@ public class AbstractEnumMetadataResourceTest extends TestCase {
 			assertEquals(in[idx++], o);
 		}
 	}
-	
+
 	/**
 	 * Test no errors handled properly.
 	 */
+	@Test
 	public void testNoErrors() {
 		MockEnumMetadataResource mResource = new MockEnumMetadataResource();
 		Map<String, List<String>> errors = mResource.getParseErrors();
 		assertNotNull(errors);
 		assertEquals(0, errors.size());
 	}
-	
+
 	/**
 	 * Test add a single error.
 	 */
+	@Test
 	public void testAddError() {
 		MockEnumMetadataResource mResource = new MockEnumMetadataResource();
 		String err = "This is an error";
 		mResource.addMetadataError(MockMetadataType.KEY1, err);
-		
+
 		Map<String, List<String>> errors = mResource.getParseErrors();
 		assertNotNull(errors);
 		assertTrue(errors.containsKey(MockMetadataType.KEY1.name()));
@@ -152,10 +164,11 @@ public class AbstractEnumMetadataResourceTest extends TestCase {
 		assertEquals(1, errList.size());
 		assertEquals(err, errList.get(0));
 	}
-	
+
 	/**
 	 * Test add a multiple errors.
 	 */
+	@Test
 	public void testAddErrors() {
 		MockEnumMetadataResource mResource = new MockEnumMetadataResource();
 		String err1 = "This is an error";
@@ -164,7 +177,7 @@ public class AbstractEnumMetadataResourceTest extends TestCase {
 		mResource.addMetadataError(MockMetadataType.KEY1, err1);
 		mResource.addMetadataError(MockMetadataType.KEY2, err2);
 		mResource.addMetadataError(MockMetadataType.KEY1, err3);
-		
+
 		Map<String, List<String>> errors = mResource.getParseErrors();
 		assertNotNull(errors);
 		assertTrue(errors.containsKey(MockMetadataType.KEY1.name()));
@@ -180,6 +193,5 @@ public class AbstractEnumMetadataResourceTest extends TestCase {
 		assertEquals(1, errList.size());
 		assertEquals(err2, errList.get(0));
 	}
-	
 
 }

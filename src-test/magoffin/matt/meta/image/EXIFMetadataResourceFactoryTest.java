@@ -24,24 +24,27 @@
 
 package magoffin.matt.meta.image;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.Locale;
-import junit.framework.TestCase;
+import org.apache.log4j.Logger;
+import org.junit.Test;
+import com.drew.imaging.jpeg.JpegMetadataReader;
+import com.drew.imaging.jpeg.JpegProcessingException;
+import com.drew.metadata.Directory;
+import com.drew.metadata.Metadata;
+import com.drew.metadata.Tag;
 import magoffin.matt.meta.MetadataNotSupportedException;
 import magoffin.matt.meta.MetadataResource;
 import magoffin.matt.meta.image.camera.Canon;
 import magoffin.matt.meta.image.camera.Canon20D;
 import magoffin.matt.meta.image.camera.CanonG5;
 import magoffin.matt.meta.image.camera.fujifilm.XF1;
-import org.apache.log4j.Logger;
-import com.drew.imaging.jpeg.JpegMetadataReader;
-import com.drew.imaging.jpeg.JpegProcessingException;
-import com.drew.metadata.Directory;
-import com.drew.metadata.Metadata;
-import com.drew.metadata.Tag;
 
 /**
  * Test case for the {@link EXIFMetadataResourceFactory} class.
@@ -49,92 +52,107 @@ import com.drew.metadata.Tag;
  * @author Matt Magoffin (spamsqr@msqr.us)
  * @version 1.1
  */
-public class EXIFMetadataResourceFactoryTest extends TestCase {
+public class EXIFMetadataResourceFactoryTest {
 
 	private final Logger log = Logger.getLogger(getClass());
 
 	/**
 	 * Test non-EXIF file.
-	 * @throws Exception if error occurs
+	 * 
+	 * @throws Exception
+	 *         if error occurs
 	 */
+	@Test
 	public void testNonEXIFResource() throws Exception {
 		EXIFMetadataResourceFactory factory = new EXIFMetadataResourceFactory();
 		URL u = getClass().getClassLoader().getResource("magoffin/matt/meta/audio/id3v1.mp3");
 		File file = new File(URLDecoder.decode(u.getFile(), "UTF-8"));
 		try {
 			factory.getMetadataResourceInstance(file);
-			fail("Should have thrown " +MetadataNotSupportedException.class.getName());
+			fail("Should have thrown " + MetadataNotSupportedException.class.getName());
 		} catch ( MetadataNotSupportedException e ) {
-			log.debug("Got expected MetadataNotSupportedException: " +e);
+			log.debug("Got expected MetadataNotSupportedException: " + e);
 			assertNotNull(e.getMetadataFile());
 			assertNotNull(e.getFactory());
 		}
 	}
-	
+
 	/**
 	 * Test able to get JPEG EXIF resource.
-	 * @throws Exception if error occurs
+	 * 
+	 * @throws Exception
+	 *         if error occurs
 	 */
+	@Test
 	public void testJpegEXIFCanon() throws Exception {
 		EXIFMetadataResourceFactory factory = new EXIFMetadataResourceFactory();
 		URL u = getClass().getClassLoader().getResource("magoffin/matt/meta/image/IMG_4846.jpg");
 		File file = new File(URLDecoder.decode(u.getFile(), "UTF-8"));
 		MetadataResource mResource = factory.getMetadataResourceInstance(file);
 		assertNotNull(mResource);
-		log.debug("Got MetadataResource implementation: " +mResource.getClass().getName());
+		log.debug("Got MetadataResource implementation: " + mResource.getClass().getName());
 		assertSame(Canon.class, mResource.getClass());
-		
+
 		Iterable<String> keys = mResource.getParsedKeys();
 		assertNotNull(keys);
 		for ( String key : keys ) {
-			log.debug("Key [" +key +"] = " +mResource.getValue(key, Locale.US));
+			log.debug("Key [" + key + "] = " + mResource.getValue(key, Locale.US));
 		}
 	}
 
 	/**
 	 * Test able to get JPEG EXIF resource for a Canon G5 image.
-	 * @throws Exception if error occurs
+	 * 
+	 * @throws Exception
+	 *         if error occurs
 	 */
+	@Test
 	public void testJpegEXIFCanonG5() throws Exception {
 		EXIFMetadataResourceFactory factory = new EXIFMetadataResourceFactory();
 		URL u = getClass().getClassLoader().getResource("magoffin/matt/meta/image/IMG_1218.jpg");
 		File file = new File(URLDecoder.decode(u.getFile(), "UTF-8"));
 		MetadataResource mResource = factory.getMetadataResourceInstance(file);
 		assertNotNull(mResource);
-		log.debug("Got MetadataResource implementation: " +mResource.getClass().getName());
+		log.debug("Got MetadataResource implementation: " + mResource.getClass().getName());
 		assertSame(CanonG5.class, mResource.getClass());
-		
+
 		Iterable<String> keys = mResource.getParsedKeys();
 		assertNotNull(keys);
 		for ( String key : keys ) {
-			log.debug("Key [" +key +"] = " +mResource.getValue(key, Locale.US));
+			log.debug("Key [" + key + "] = " + mResource.getValue(key, Locale.US));
 		}
 	}
 
 	/**
 	 * Test able to get JPEG EXIF resource for a Canon G5 image.
-	 * @throws Exception if error occurs
+	 * 
+	 * @throws Exception
+	 *         if error occurs
 	 */
+	@Test
 	public void testJpegEXIFCanon20D() throws Exception {
 		EXIFMetadataResourceFactory factory = new EXIFMetadataResourceFactory();
 		URL u = getClass().getClassLoader().getResource("magoffin/matt/meta/image/IMG_4523.jpg");
 		File file = new File(URLDecoder.decode(u.getFile(), "UTF-8"));
 		MetadataResource mResource = factory.getMetadataResourceInstance(file);
 		assertNotNull(mResource);
-		log.debug("Got MetadataResource implementation: " +mResource.getClass().getName());
+		log.debug("Got MetadataResource implementation: " + mResource.getClass().getName());
 		assertSame(Canon20D.class, mResource.getClass());
-		
+
 		Iterable<String> keys = mResource.getParsedKeys();
 		assertNotNull(keys);
 		for ( String key : keys ) {
-			log.debug("Key [" +key +"] = " +mResource.getValue(key, Locale.US));
+			log.debug("Key [" + key + "] = " + mResource.getValue(key, Locale.US));
 		}
 	}
 
 	/**
 	 * Test able to get JPEG EXIF resource for an iPhone 3G image.
-	 * @throws Exception if error occurs
+	 * 
+	 * @throws Exception
+	 *         if error occurs
 	 */
+	@Test
 	public void testJpegEXIFiPhone3G() throws Exception {
 		EXIFMetadataResourceFactory factory = new EXIFMetadataResourceFactory();
 		URL u = getClass().getClassLoader().getResource("magoffin/matt/meta/image/IMG_0027.JPG");
@@ -142,13 +160,13 @@ public class EXIFMetadataResourceFactoryTest extends TestCase {
 		new SampleUsage(file);
 		MetadataResource mResource = factory.getMetadataResourceInstance(file);
 		assertNotNull(mResource);
-		log.debug("Got MetadataResource implementation: " +mResource.getClass().getName());
+		log.debug("Got MetadataResource implementation: " + mResource.getClass().getName());
 		assertSame(EXIFJpegMetadataResource.class, mResource.getClass());
-		
+
 		Iterable<String> keys = mResource.getParsedKeys();
 		assertNotNull(keys);
 		for ( String key : keys ) {
-			log.debug("Key [" +key +"] = " +mResource.getValue(key, Locale.US));
+			log.debug("Key [" + key + "] = " + mResource.getValue(key, Locale.US));
 		}
 	}
 
@@ -158,6 +176,7 @@ public class EXIFMetadataResourceFactoryTest extends TestCase {
 	 * @throws Exception
 	 *         if error occurs
 	 */
+	@Test
 	public void testJpegEXIFFujifilmXF1() throws Exception {
 		EXIFMetadataResourceFactory factory = new EXIFMetadataResourceFactory();
 		URL u = getClass().getClassLoader().getResource("magoffin/matt/meta/image/DSCF0209.JPG");
@@ -175,43 +194,67 @@ public class EXIFMetadataResourceFactoryTest extends TestCase {
 		}
 	}
 
-	private class SampleUsage
-	{
-	    /**
-	     * Constructor.
-	     * @param jpegFile jpeg file upon which to operate
-	     */
-	    public SampleUsage(File jpegFile)
-	    {
-	        try {
-	            Metadata metadata = JpegMetadataReader.readMetadata(jpegFile);
-	            printImageTags(metadata);
+	/**
+	 * Test able to get JPEG EXIF resource for an iPhone XS image.
+	 * 
+	 * @throws Exception
+	 *         if error occurs
+	 */
+	@Test
+	public void testJpegEXIFiPhoneXS() throws Exception {
+		EXIFMetadataResourceFactory factory = new EXIFMetadataResourceFactory();
+		URL u = getClass().getClassLoader().getResource("magoffin/matt/meta/image/IMG_4082.jpeg");
+		File file = new File(URLDecoder.decode(u.getFile(), "UTF-8"));
+		new SampleUsage(file);
+		MetadataResource mResource = factory.getMetadataResourceInstance(file);
+		assertNotNull(mResource);
+		log.debug("Got MetadataResource implementation: " + mResource.getClass().getName());
+		assertSame(EXIFJpegMetadataResource.class, mResource.getClass());
+
+		Iterable<String> keys = mResource.getParsedKeys();
+		assertNotNull(keys);
+		for ( String key : keys ) {
+			log.debug("Key [" + key + "] = " + mResource.getValue(key, Locale.US));
+		}
+	}
+
+	private class SampleUsage {
+
+		/**
+		 * Constructor.
+		 * 
+		 * @param jpegFile
+		 *        jpeg file upon which to operate
+		 */
+		public SampleUsage(File jpegFile) {
+			try {
+				Metadata metadata = JpegMetadataReader.readMetadata(jpegFile);
+				printImageTags(metadata);
 			} catch ( IOException e ) {
 				System.err.println("Error reading file: " + e.getMessage());
-	        } catch (JpegProcessingException e) {
-	            System.err.println("error 1a");
-	        }
+			} catch ( JpegProcessingException e ) {
+				System.err.println("error 1a");
+			}
 
-	    }
+		}
 
-		private void printImageTags(Metadata metadata)
-	    {
+		private void printImageTags(Metadata metadata) {
 			for ( Directory directory : metadata.getDirectories() ) {
 				for ( Tag tag : directory.getTags() ) {
-	                try {
-	                	log.info(tag.getDirectoryName() +'/' +tag.getTagTypeHex() +" (" +tag.getTagName() +") "
-	                		+tag.getDescription());
+					try {
+						log.info(tag.getDirectoryName() + '/' + tag.getTagTypeHex() + " ("
+								+ tag.getTagName() + ") " + tag.getDescription());
 					} catch ( RuntimeException e ) {
-	                	log.error(e);
-	                }
-	            }
-	            if (directory.hasErrors()) {
+						log.error(e);
+					}
+				}
+				if ( directory.hasErrors() ) {
 					for ( String err : directory.getErrors() ) {
 						log.error(err);
-	                }
-	            }
-	        }
-	    }
+					}
+				}
+			}
+		}
 
 	}
 }

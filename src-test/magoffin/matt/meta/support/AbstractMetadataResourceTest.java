@@ -26,12 +26,16 @@
 
 package magoffin.matt.meta.support;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
-import junit.framework.TestCase;
+import org.junit.Test;
 
 /**
  * Unit test for the {@link AbstractMetadataResource} class.
@@ -39,65 +43,69 @@ import junit.framework.TestCase;
  * @author Matt Magoffin (spamsqr@msqr.us)
  * @version $Revision$ $Date$
  */
-public class AbstractMetadataResourceTest extends TestCase {
+public class AbstractMetadataResourceTest {
 
 	/**
 	 * Test attempting to get a non-existing value.
 	 */
 	public void testNonExistingValue() {
 		MockMetadataResource mResource = new MockMetadataResource();
-		
+
 		Object o = mResource.getValue("key", Locale.US);
 		assertNull(o);
 
-		 o = mResource.getValue("not", Locale.US);
+		o = mResource.getValue("not", Locale.US);
 		assertNull(o);
 	}
-	
+
 	/**
 	 * Test attempting to get a non-existing value.
 	 */
+	@Test
 	public void testNonExistingValues() {
 		MockMetadataResource mResource = new MockMetadataResource();
-		
+
 		Iterable<?> list = mResource.getValues("key", Locale.US);
 		assertNotNull(list);
 		assertFalse(list.iterator().hasNext());
 	}
-	
+
 	/**
 	 * Test setting a single value.
 	 */
+	@Test
 	public void testSetValue() {
 		MockMetadataResource mResource = new MockMetadataResource();
 		mResource.setValue("key", "value");
-		
+
 		Object o = mResource.getValue("key", Locale.US);
 		assertNotNull(o);
 		assertEquals("value", o);
 	}
-	
+
 	/**
 	 * Test replacing a single value.
 	 */
+	@Test
 	public void testReplaceValue() {
 		MockMetadataResource mResource = new MockMetadataResource();
 		mResource.setValue("key", "value");
 		mResource.setValue("key", "value2");
-		
+
 		Object o = mResource.getValue("key", Locale.US);
 		assertNotNull(o);
 		assertEquals("value2", o);
 	}
-	
+
 	/**
 	 * Test setting a list of values.
 	 */
+	@Test
 	public void testSetValues() {
 		MockMetadataResource mResource = new MockMetadataResource();
-		Object[] in = new Object[]{"value1","value2","value3"};
+		Object[] in = new Object[] { "value1", "value2", "value3" };
 		mResource.setValues("key", Arrays.asList(in));
-		
+
 		Iterable<?> list = mResource.getValues("key", Locale.US);
 		assertNotNull(list);
 		int idx = 0;
@@ -105,17 +113,18 @@ public class AbstractMetadataResourceTest extends TestCase {
 			assertEquals(in[idx++], o);
 		}
 	}
-	
+
 	/**
 	 * Test replacing a list of values.
 	 */
+	@Test
 	public void testReplaceValues() {
 		MockMetadataResource mResource = new MockMetadataResource();
-		Object[] in = new Object[]{"value1","value2","value3"};
+		Object[] in = new Object[] { "value1", "value2", "value3" };
 		mResource.setValues("key", Arrays.asList(in));
-		in = new Object[]{"value4",new Integer(5),"value6"};
+		in = new Object[] { "value4", new Integer(5), "value6" };
 		mResource.setValues("key", Arrays.asList(in));
-		
+
 		Iterable<?> list = mResource.getValues("key", Locale.US);
 		assertNotNull(list);
 		int idx = 0;
@@ -123,25 +132,27 @@ public class AbstractMetadataResourceTest extends TestCase {
 			assertEquals(in[idx++], o);
 		}
 	}
-	
+
 	/**
 	 * Test no errors handled properly.
 	 */
+	@Test
 	public void testNoErrors() {
 		MockMetadataResource mResource = new MockMetadataResource();
 		Map<String, List<String>> errors = mResource.getParseErrors();
 		assertNotNull(errors);
 		assertEquals(0, errors.size());
 	}
-	
+
 	/**
 	 * Test add a single error.
 	 */
+	@Test
 	public void testAddError() {
 		MockMetadataResource mResource = new MockMetadataResource();
 		String err = "This is an error";
 		mResource.addMetadataError("key", err);
-		
+
 		Map<String, List<String>> errors = mResource.getParseErrors();
 		assertNotNull(errors);
 		assertTrue(errors.containsKey("key"));
@@ -150,10 +161,11 @@ public class AbstractMetadataResourceTest extends TestCase {
 		assertEquals(1, errList.size());
 		assertEquals(err, errList.get(0));
 	}
-	
+
 	/**
 	 * Test add a multiple errors.
 	 */
+	@Test
 	public void testAddErrors() {
 		MockMetadataResource mResource = new MockMetadataResource();
 		String err1 = "This is an error";
@@ -162,7 +174,7 @@ public class AbstractMetadataResourceTest extends TestCase {
 		mResource.addMetadataError("key1", err1);
 		mResource.addMetadataError("key2", err2);
 		mResource.addMetadataError("key1", err3);
-		
+
 		Map<String, List<String>> errors = mResource.getParseErrors();
 		assertNotNull(errors);
 		assertTrue(errors.containsKey("key1"));
@@ -178,5 +190,5 @@ public class AbstractMetadataResourceTest extends TestCase {
 		assertEquals(1, errList.size());
 		assertEquals(err2, errList.get(0));
 	}
-	
+
 }

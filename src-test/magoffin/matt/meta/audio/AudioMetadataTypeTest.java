@@ -26,9 +26,9 @@
 
 package magoffin.matt.meta.audio;
 
+import static org.junit.Assert.assertEquals;
 import java.util.Date;
-
-import junit.framework.TestCase;
+import org.junit.Test;
 
 /**
  * Test case for the {@link AudioMetadataType} class.
@@ -36,13 +36,14 @@ import junit.framework.TestCase;
  * @author Matt Magoffin (spamsqr@msqr.us)
  * @version $Revision$ $Date$
  */
-public class AudioMetadataTypeTest extends TestCase {
+public class AudioMetadataTypeTest {
 
 	/**
 	 * Test date object type.
 	 */
+	@Test
 	public void testReleaseDateObjectType() {
 		assertEquals(Date.class, AudioMetadataType.RELEASE_DATE.getObjectType());
 	}
-	
+
 }
