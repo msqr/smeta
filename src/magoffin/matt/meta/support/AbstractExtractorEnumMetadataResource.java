@@ -46,8 +46,8 @@ public abstract class AbstractExtractorEnumMetadataResource<T extends Enum<T>>
 	/** A date format in the form <code>yyyy:MM:dd hh:mm:ss</code>. */
 	public static final String BASIC_DATE_FORMAT = "yyyy:MM:dd HH:mm:ss";
 
-	/** A date format in the form <code>yyyy:MM:dd'T'hh:mm:ssXX</code>. */
-	public static final String ISO_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssXX";
+	/** A date format in the form <code>yyyy:MM:dd'T'hh:mm:ssXXX</code>. */
+	public static final String ISO_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssXXX";
 
 	/** A date format in the form <code>EEE, dd MM yyyy HH:mm:ss XXX</code>. */
 	public static final String RFC5322_DATE_FORMAT = "EEE, dd MM yyyy HH:mm:ss XXX";

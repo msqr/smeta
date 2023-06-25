@@ -196,7 +196,7 @@
 	</target>
 
 	<target name="clean" description="Delete build files">
-		<delete dir="${dir.build}/ant"/>
+		<delete dir="${dir.build}"/>
 	</target>
 	
 	<!-- The app-jar target will include some dependencies directly in the smeta JAR, so
@@ -333,6 +333,7 @@
 			<property name="dir.build" value="${dir.build}"/>
 			<property name="dir.dist" value="${dir.dist}"/>
 			<property name="app.name" value="${app.archive.name}"/>
+			<property name="dir.env" value="defaults"/>
 		</ant>
 		
 	</target>
