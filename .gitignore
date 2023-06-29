@@ -1,6 +1,9 @@
+/bin/
 /build/
 /dist/
 /build.properties
 /version.properties
 /coverage/
+/tmp/
 .DS_Store
+/.gradle/
